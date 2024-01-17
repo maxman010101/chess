@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Represents a single chess piece
@@ -51,6 +52,54 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+//        if(getPieceType() == PieceType.PAWN){return pawnMoves(board, myPosition);}
+        if(getPieceType() == PieceType.KING){return kingMoves(board, myPosition);}
+//        else if(getPieceType() == PieceType.QUEEN){return queenMoves(board, myPosition);}
+//        else if(getPieceType() == PieceType.ROOK){return rookMoves(board, myPosition);}
+//        else if(getPieceType() == PieceType.KNIGHT){return knightMoves(board, myPosition);}
+//        else if(getPieceType() == PieceType.BISHOP){return bishopMoves(board, myPosition);}
+        else
+            return null;
     }
+
+//    public Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition pos) {
+//
+//    }
+    public Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition pos) {
+        Collection<ChessMove> possMoves = new HashSet<>();
+        if(board.getPiece(pos).getTeamColor() == ChessGame.TeamColor.WHITE){
+            ChessPosition possPosit = new ChessPosition(pos.row + 1, pos.col);
+            if(pos.row + 1 >= 0 && pos.row + 1 <= 7 && ((board.getPiece(possPosit) != null
+                    && board.getPiece(possPosit).getTeamColor() == ChessGame.TeamColor.BLACK)
+                    || board.getPiece(possPosit) == null)) {
+                possMoves.add(new ChessMove(pos, possPosit, null));
+            }
+            else if(pos.row - 1 >= 0 && pos.row - 1 <= 7){
+
+            }
+            else if(pos.col + 1 >+ 0 && pos.col + 1 <= 7){
+
+            }
+            else if(pos.col - 1 >= 0 && pos.col + 1 <= 7){
+
+            }
+        }
+        for(ChessMove moves : possMoves){
+            System.out.println(moves);
+        }
+
+        return possMoves;
+    }
+//    public Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition pos) {
+//
+//    }
+//    public Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition pos) {
+//
+//    }
+//    public Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition pos) {
+//
+//    }
+//    public Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition pos) {
+//
+//    }
 }
