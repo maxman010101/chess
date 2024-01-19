@@ -124,6 +124,12 @@ public class ChessPiece {
     public Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition pos) {
         Collection<ChessMove> possMoves = new HashSet<>();
         if(board.getPiece(pos).getTeamColor() == ChessGame.TeamColor.WHITE){
+            if(pos.row == 2){
+                ChessPosition possPosit = new ChessPosition(pos.row + 2, pos.col);
+                possMoves.add(new ChessMove(pos, possPosit, null));
+                possPosit = new ChessPosition(pos.row + 1, pos.col);
+                possMoves.add(new ChessMove(pos, possPosit, null));
+            }
             ChessPosition possPosit = new ChessPosition(pos.row + 1, pos.col);
             if(isValidPawnMove(pos, ChessGame.TeamColor.WHITE, board) && possPosit.row == 8){
                 possMoves.add(new ChessMove(pos, possPosit, ));
