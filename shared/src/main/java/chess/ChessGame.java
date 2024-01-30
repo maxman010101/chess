@@ -47,7 +47,15 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        ;
+        //return ChessPiece.pieceMoves(gameBoard, startPosition);
+        ChessPiece currentPiece = gameBoard.getPiece(startPosition);
+        if (currentPiece != null){
+            for(ChessMove moves : currentPiece.pieceMoves(gameBoard, startPosition)){
+                
+            }
+        }
+        else
+            return null;
     }
 
     /**
