@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -49,10 +50,14 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         //return ChessPiece.pieceMoves(gameBoard, startPosition);
         ChessPiece currentPiece = gameBoard.getPiece(startPosition);
+        Collection<ChessMove> valid = new HashSet<>();
         if (currentPiece != null){
-            for(ChessMove moves : currentPiece.pieceMoves(gameBoard, startPosition)){
-                
+            for(ChessMove move : currentPiece.pieceMoves(gameBoard, startPosition)){
+                if(!(isInCheck(currentPiece.getTeamColor())) && team == currentPiece.getTeamColor()){
+                    valid.add(new ChessMove(startPosition, move.endPosition, null));
+                }
             }
+            return valid;
         }
         else
             return null;
