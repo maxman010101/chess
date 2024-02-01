@@ -81,8 +81,21 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         if(teamColor == TeamColor.WHITE){
-
+            for(int i = 1; i <= 8; i++){
+                for(int c = 1; c <= 8; c++){
+                    if(gameBoard.getPiece(new ChessPosition(i,c)) != null
+                            && gameBoard.getPiece(new ChessPosition(i,c)).pieceColor == TeamColor.BLACK){
+                        for(ChessMove move : validMoves(new ChessPosition(i,c))){
+                            if(gameBoard.getPiece(new ChessPosition(move.endPosition.row, move.endPosition.col)).getPieceType() == ChessPiece.PieceType.KING
+                                    && gameBoard.getPiece(new ChessPosition(move.endPosition.row, move.endPosition.col)).getTeamColor() == TeamColor.WHITE){
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
         }
+        return false;
     }
 
     /**
@@ -92,7 +105,8 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        if(isInCheck(teamColor) && validMoves() == null){
+
+        if(isInCheck(teamColor) && isInStalemate(teamColor)){
             return true;
         }
         else
@@ -107,11 +121,33 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        if(validMoves() == null){
+        if(teamColor == TeamColor.WHITE){
+            for(int i = 1; i <= 8; i++){
+                for(int c = 1; c <= 8; c++){
+                    if(gameBoard.getPiece(new ChessPosition(i,c)) != null
+                            && gameBoard.getPiece(new ChessPosition(i,c)).pieceColor == teamColor){
+                        if(!(validMoves(new ChessPosition(i,c)).isEmpty())){
+                        return false;
+                        }
+                    }
+                }
+            }
             return true;
         }
-        else
-            return false;
+        if(teamColor == TeamColor.BLACK){
+            for(int i = 1; i <= 8; i++){
+                for(int c = 1; c <= 8; c++){
+                    if(gameBoard.getPiece(new ChessPosition(i,c)) != null
+                            && gameBoard.getPiece(new ChessPosition(i,c)).pieceColor == teamColor){
+                        if(!(validMoves(new ChessPosition(i,c)).isEmpty())){
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
