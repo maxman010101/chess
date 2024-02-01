@@ -58,13 +58,17 @@ public class ChessGame {
                 ChessBoard copyBoard = new ChessBoard(piecesCopy);
                 ChessPiece copyCurrentPiece = copyBoard.getPiece(startPosition);
                 if(!(isInCheck(copyCurrentPiece.getTeamColor())) && team == copyCurrentPiece.getTeamColor()){
-                    makeMove(move);
+                    copyBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col),
+                            copyBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)));
+                    copyBoard.pieces[move.startPosition.row][move.startPosition.col] = null;
                     if(!(isInCheck(copyCurrentPiece.getTeamColor())) && team == copyCurrentPiece.getTeamColor()){
                         valid.add(move);
                     }
                 }
                 if(isInCheck(copyCurrentPiece.getTeamColor()) && team == copyCurrentPiece.getTeamColor()){
-                    makeMove(move);
+                    copyBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col),
+                            copyBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)));
+                    copyBoard.pieces[move.startPosition.row][move.startPosition.col] = null;
                     if(!(isInCheck(copyCurrentPiece.getTeamColor())) && team == copyCurrentPiece.getTeamColor()){
                         valid.add(move);
                     }
@@ -83,11 +87,26 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        if(validMoves(new ChessPosition(move.startPosition.row, move.startPosition.col)).contains(move)){
-            move.startPosition = move.endPosition;
+        if(gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)) != null){
+            if(gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)).getTeamColor() == TeamColor.WHITE){
+                if(validMoves(new ChessPosition(move.startPosition.row, move.startPosition.col)).contains(move) && team == TeamColor.WHITE){
+                    gameBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col),
+                            gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)));
+                    gameBoard.pieces[move.startPosition.row][move.startPosition.col] = null;
+                }
+                else
+                    throw new InvalidMoveException("Invalid move");
+            }
+            if(gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)).getTeamColor() == TeamColor.BLACK){
+                if(validMoves(new ChessPosition(move.startPosition.row, move.startPosition.col)).contains(move) && team == TeamColor.BLACK){
+                    gameBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col),
+                            gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)));
+                    gameBoard.pieces[move.startPosition.row][move.startPosition.col] = null;
+                }
+                else
+                    throw new InvalidMoveException("Invalid move");
+            }
         }
-        else
-            throw new InvalidMoveException("Invalid move");
     }
 
     /**
