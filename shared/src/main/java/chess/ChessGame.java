@@ -85,9 +85,26 @@ public class ChessGame {
                 for(int c = 1; c <= 8; c++){
                     if(gameBoard.getPiece(new ChessPosition(i,c)) != null
                             && gameBoard.getPiece(new ChessPosition(i,c)).pieceColor == TeamColor.BLACK){
-                        for(ChessMove move : validMoves(new ChessPosition(i,c))){
-                            if(gameBoard.getPiece(new ChessPosition(move.endPosition.row, move.endPosition.col)).getPieceType() == ChessPiece.PieceType.KING
+                        for(ChessMove move : gameBoard.getPiece(new ChessPosition(i,c)).pieceMoves(gameBoard, new ChessPosition(i,c))){
+                            if(gameBoard.getPiece(new ChessPosition(move.endPosition.row, move.endPosition.col)) != null &&
+                                    gameBoard.getPiece(new ChessPosition(move.endPosition.row, move.endPosition.col)).getPieceType() == ChessPiece.PieceType.KING
                                     && gameBoard.getPiece(new ChessPosition(move.endPosition.row, move.endPosition.col)).getTeamColor() == TeamColor.WHITE){
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if(teamColor == TeamColor.BLACK){
+            for(int i = 1; i <= 8; i++){
+                for(int c = 1; c <= 8; c++){
+                    if(gameBoard.getPiece(new ChessPosition(i,c)) != null
+                            && gameBoard.getPiece(new ChessPosition(i,c)).pieceColor == TeamColor.WHITE){
+                        for(ChessMove move : gameBoard.getPiece(new ChessPosition(i,c)).pieceMoves(gameBoard, new ChessPosition(i,c))){
+                            if(gameBoard.getPiece(new ChessPosition(move.endPosition.row, move.endPosition.col)) != null &&
+                                    gameBoard.getPiece(new ChessPosition(move.endPosition.row, move.endPosition.col)).getPieceType() == ChessPiece.PieceType.KING
+                                    && gameBoard.getPiece(new ChessPosition(move.endPosition.row, move.endPosition.col)).getTeamColor() == TeamColor.BLACK){
                                 return true;
                             }
                         }
