@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -53,8 +54,20 @@ public class ChessGame {
         Collection<ChessMove> valid = new HashSet<>();
         if (currentPiece != null){
             for(ChessMove move : currentPiece.pieceMoves(gameBoard, startPosition)){
-                if(!(isInCheck(currentPiece.getTeamColor())) && team == currentPiece.getTeamColor()){
-                    valid.add(move);
+                ChessPiece[][] piecesCopy = Arrays.copyOf(gameBoard.pieces, gameBoard.pieces.length);
+                ChessBoard copyBoard = new ChessBoard(piecesCopy);
+                ChessPiece copyCurrentPiece = copyBoard.getPiece(startPosition);
+                if(!(isInCheck(copyCurrentPiece.getTeamColor())) && team == copyCurrentPiece.getTeamColor()){
+                    makeMove(move);
+                    if(!(isInCheck(copyCurrentPiece.getTeamColor())) && team == copyCurrentPiece.getTeamColor()){
+                        valid.add(move);
+                    }
+                }
+                if(isInCheck(copyCurrentPiece.getTeamColor()) && team == copyCurrentPiece.getTeamColor()){
+                    makeMove(move);
+                    if(!(isInCheck(copyCurrentPiece.getTeamColor())) && team == copyCurrentPiece.getTeamColor()){
+                        valid.add(move);
+                    }
                 }
             }
             return valid;
@@ -70,7 +83,11 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        if(validMoves(new ChessPosition(move.startPosition.row, move.startPosition.col)).contains(move)){
+            move.startPosition = move.endPosition;
+        }
+        else
+            throw new InvalidMoveException("Invalid move");
     }
 
     /**

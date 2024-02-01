@@ -14,6 +14,9 @@ public class ChessBoard {
     public ChessBoard() {
         
     }
+    public ChessBoard(ChessPiece[][] pieces) {
+        this.pieces = pieces;
+    }
 
     /**
      * Adds a chess piece to the chessboard
