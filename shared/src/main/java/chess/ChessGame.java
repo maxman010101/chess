@@ -102,10 +102,16 @@ public class ChessGame {
             if(gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)) != null
                     && gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)).getTeamColor() == TeamColor.WHITE){
                 if(validMoves(new ChessPosition(move.startPosition.row, move.startPosition.col)).contains(move) && team == TeamColor.WHITE){
-                    gameBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col),
-                            gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)));
-                    gameBoard.addPiece(new ChessPosition(move.startPosition.row, move.startPosition.col), null);
-                    team = TeamColor.BLACK;
+                    if(move.promotionPiece != null){
+                        gameBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col), new ChessPiece(TeamColor.WHITE, move.promotionPiece));
+                        gameBoard.addPiece(new ChessPosition(move.startPosition.row, move.startPosition.col), null);
+                        team = TeamColor.BLACK;
+                    }
+                    else
+                        gameBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col),
+                                gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)));
+                        gameBoard.addPiece(new ChessPosition(move.startPosition.row, move.startPosition.col), null);
+                        team = TeamColor.BLACK;
                 }
                 else
                     throw new InvalidMoveException("Invalid move");
@@ -113,8 +119,14 @@ public class ChessGame {
             if(gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)) != null
                     && gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)).getTeamColor() == TeamColor.BLACK){
                 if(validMoves(new ChessPosition(move.startPosition.row, move.startPosition.col)).contains(move) && team == TeamColor.BLACK){
-                    gameBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col),
-                            gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)));
+                    if(move.promotionPiece != null){
+                        gameBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col), new ChessPiece(TeamColor.BLACK, move.promotionPiece));
+                        gameBoard.addPiece(new ChessPosition(move.startPosition.row, move.startPosition.col), null);
+                        team = TeamColor.WHITE;
+                    }
+                    else
+                        gameBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col),
+                                gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)));
                     gameBoard.addPiece(new ChessPosition(move.startPosition.row, move.startPosition.col), null);
                     team = TeamColor.WHITE;
                 }
