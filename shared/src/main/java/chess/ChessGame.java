@@ -52,27 +52,27 @@ public class ChessGame {
         //return ChessPiece.pieceMoves(gameBoard, startPosition);
         ChessPiece currentPiece = gameBoard.getPiece(startPosition);
         Collection<ChessMove> valid = new HashSet<>();
+        var v = currentPiece.pieceMoves(gameBoard, startPosition);
         if (currentPiece != null){
             for(ChessMove move : currentPiece.pieceMoves(gameBoard, startPosition)){
-                ChessPiece[][] piecesCopy = Arrays.copyOf(gameBoard.pieces, gameBoard.pieces.length);
-                ChessBoard copyBoard = new ChessBoard(piecesCopy);
-                ChessPiece copyCurrentPiece = copyBoard.getPiece(startPosition);
-                if(!(isInCheck(copyCurrentPiece.getTeamColor())) && team == copyCurrentPiece.getTeamColor()){
-                    copyBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col),
-                            copyBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)));
-                    copyBoard.pieces[move.startPosition.row][move.startPosition.col] = null;
+                //ChessPiece[][] piecesCopy = Arrays.copyOf(gameBoard.pieces, gameBoard.pieces.length);
+                ChessBoard copyBoard = makeDeepCopyOfBoard(gameBoard);
+                ChessPiece copyCurrentPiece = copyBoard.getPiece(move.startPosition);
+                if(copyCurrentPiece != null && !(isInCheck(copyCurrentPiece.getTeamColor())) && team == copyCurrentPiece.getTeamColor()){
+                    gameBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col), copyCurrentPiece);
+                    gameBoard.addPiece(new ChessPosition(move.startPosition.row, move.startPosition.col), null);
                     if(!(isInCheck(copyCurrentPiece.getTeamColor())) && team == copyCurrentPiece.getTeamColor()){
                         valid.add(move);
                     }
                 }
-                if(isInCheck(copyCurrentPiece.getTeamColor()) && team == copyCurrentPiece.getTeamColor()){
-                    copyBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col),
-                            copyBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)));
-                    copyBoard.pieces[move.startPosition.row][move.startPosition.col] = null;
+                if(copyCurrentPiece != null && isInCheck(copyCurrentPiece.getTeamColor()) && team == copyCurrentPiece.getTeamColor()){
+                    gameBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col), copyCurrentPiece);
+                    gameBoard.addPiece(new ChessPosition(move.startPosition.row, move.startPosition.col), null);
                     if(!(isInCheck(copyCurrentPiece.getTeamColor())) && team == copyCurrentPiece.getTeamColor()){
                         valid.add(move);
                     }
                 }
+                gameBoard = copyBoard;
             }
             return valid;
         }
@@ -80,6 +80,17 @@ public class ChessGame {
             return null;
     }
 
+    public ChessBoard makeDeepCopyOfBoard(ChessBoard board){
+        ChessBoard copy = new ChessBoard();
+        for(int r = 1; r <= 8; r++){
+            for(int c = 1; c <= 8; c++){
+                if(board.getPiece(new ChessPosition(r,c)) != null){
+                    copy.addPiece(new ChessPosition(r,c), board.getPiece(new ChessPosition(r,c)));
+                }
+            }
+        }
+        return copy;
+    }
     /**
      * Makes a move in a chess game
      *
@@ -88,20 +99,24 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         if(gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)) != null){
-            if(gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)).getTeamColor() == TeamColor.WHITE){
+            if(gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)) != null
+                    && gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)).getTeamColor() == TeamColor.WHITE){
                 if(validMoves(new ChessPosition(move.startPosition.row, move.startPosition.col)).contains(move) && team == TeamColor.WHITE){
                     gameBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col),
                             gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)));
-                    gameBoard.pieces[move.startPosition.row][move.startPosition.col] = null;
+                    gameBoard.addPiece(new ChessPosition(move.startPosition.row, move.startPosition.col), null);
+                    team = TeamColor.BLACK;
                 }
                 else
                     throw new InvalidMoveException("Invalid move");
             }
-            if(gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)).getTeamColor() == TeamColor.BLACK){
+            if(gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)) != null
+                    && gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)).getTeamColor() == TeamColor.BLACK){
                 if(validMoves(new ChessPosition(move.startPosition.row, move.startPosition.col)).contains(move) && team == TeamColor.BLACK){
                     gameBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col),
                             gameBoard.getPiece(new ChessPosition(move.startPosition.row, move.startPosition.col)));
-                    gameBoard.pieces[move.startPosition.row][move.startPosition.col] = null;
+                    gameBoard.addPiece(new ChessPosition(move.startPosition.row, move.startPosition.col), null);
+                    team = TeamColor.WHITE;
                 }
                 else
                     throw new InvalidMoveException("Invalid move");
