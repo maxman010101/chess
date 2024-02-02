@@ -201,17 +201,28 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-            for(int i = 1; i <= 8; i++){
-                for(int c = 1; c <= 8; c++){
-                    if(gameBoard.getPiece(new ChessPosition(i,c)) != null
-                            && gameBoard.getPiece(new ChessPosition(i,c)).pieceColor == teamColor){
-                        if(!(validMoves(new ChessPosition(i,c)).isEmpty())){
+        for(int i = 1; i <= 8; i++){
+            for(int c = 1; c <= 8; c++){
+                //var v = gameBoard.getPiece(new ChessPosition(i,c)).pieceColor;
+                if(gameBoard.getPiece(new ChessPosition(i,c)) != null
+                        && gameBoard.getPiece(new ChessPosition(i,c)).pieceColor == teamColor && teamColor == team){
+                    if(!(validMoves(new ChessPosition(i,c)).isEmpty())){
                         return false;
-                        }
                     }
                 }
             }
-            return true;
+        }
+        for(int i = 1; i <= 8; i++){
+            for(int c = 1; c <= 8; c++){
+                if(gameBoard.getPiece(new ChessPosition(i,c)) != null
+                        && gameBoard.getPiece(new ChessPosition(i,c)).pieceColor == teamColor && teamColor != team){
+                    //if(!(validMoves(new ChessPosition(i,c)).isEmpty())){
+                        return false;
+
+                }
+            }
+        }
+        return true;
     }
 
     /**
