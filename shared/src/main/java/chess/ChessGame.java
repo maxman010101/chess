@@ -58,17 +58,17 @@ public class ChessGame {
                 //ChessPiece[][] piecesCopy = Arrays.copyOf(gameBoard.pieces, gameBoard.pieces.length);
                 ChessBoard copyBoard = makeDeepCopyOfBoard(gameBoard);
                 ChessPiece copyCurrentPiece = copyBoard.getPiece(move.startPosition);
-                if(copyCurrentPiece != null && !(isInCheck(copyCurrentPiece.getTeamColor())) && team == copyCurrentPiece.getTeamColor()){
+                if(copyCurrentPiece != null && !(isInCheck(copyCurrentPiece.getTeamColor()))){
                     gameBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col), copyCurrentPiece);
                     gameBoard.addPiece(new ChessPosition(move.startPosition.row, move.startPosition.col), null);
-                    if(!(isInCheck(copyCurrentPiece.getTeamColor())) && team == copyCurrentPiece.getTeamColor()){
+                    if(!(isInCheck(copyCurrentPiece.getTeamColor()))){
                         valid.add(move);
                     }
                 }
-                if(copyCurrentPiece != null && isInCheck(copyCurrentPiece.getTeamColor()) && team == copyCurrentPiece.getTeamColor()){
+                if(copyCurrentPiece != null && isInCheck(copyCurrentPiece.getTeamColor())){
                     gameBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col), copyCurrentPiece);
                     gameBoard.addPiece(new ChessPosition(move.startPosition.row, move.startPosition.col), null);
-                    if(!(isInCheck(copyCurrentPiece.getTeamColor())) && team == copyCurrentPiece.getTeamColor()){
+                    if(!(isInCheck(copyCurrentPiece.getTeamColor()))){
                         valid.add(move);
                     }
                 }

@@ -303,9 +303,6 @@ public class ChessPiece {
                 possMoves.add(new ChessMove(pos, possPosit, null));
             }
         }
-        for(ChessMove moves : possMoves){
-            System.out.println(moves);
-        }
         return possMoves;
     }
     public Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition pos) {
