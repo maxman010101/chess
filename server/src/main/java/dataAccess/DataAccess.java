@@ -1,6 +1,9 @@
 package dataAccess;
 
 import chess.ChessGame;
+import server.Game;
+import server.User;
+import server.Auth;
 
 import java.util.List;
 
@@ -21,13 +24,13 @@ public interface DataAccess {
 
     String getAuth(String authToken) throws DataAccessException;
 
-    List<ChessGame> listGames(String authToken) throws DataAccessException;
+    List<Game> listGames(String authToken) throws DataAccessException;
 
     boolean verifyLogIn(String authToken) throws DataAccessException;
 
-    ChessGame createGame(String name) throws DataAccessException;
+    Game createGame(String name) throws DataAccessException;
 
-    ChessGame getGame(String id) throws DataAccessException;
+    Game getGame(String id) throws DataAccessException;
 
     boolean saveGame(String clientColor, ChessGame game) throws DataAccessException;
 }

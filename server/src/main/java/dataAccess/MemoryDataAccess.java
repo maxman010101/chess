@@ -1,24 +1,39 @@
 package dataAccess;
 
 import chess.ChessGame;
+import server.Game;
+import server.User;
+import server.Auth;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class MemoryDataAccess implements DataAccess{
 
+    static List<Arrays> users;
+    static List<Arrays> auths;
+    static List<Arrays> session;
+    static List<Arrays> game;
+
+    public MemoryDataAccess() {
+    }
+
     @Override
     public boolean clearUsers() throws DataAccessException {
-        return false;
+        users.clear();
+        return true;
     }
 
     @Override
     public boolean clearGames() throws DataAccessException {
-        return false;
+        game.clear();
+        return true;
     }
 
     @Override
     public boolean clearAuths() throws DataAccessException {
-        return false;
+        auths.clear();
+        return true;
     }
 
     @Override
@@ -47,7 +62,7 @@ public class MemoryDataAccess implements DataAccess{
     }
 
     @Override
-    public List<ChessGame> listGames(String authToken) throws DataAccessException {
+    public List<Game> listGames(String authToken) throws DataAccessException {
         return null;
     }
 
@@ -57,12 +72,12 @@ public class MemoryDataAccess implements DataAccess{
     }
 
     @Override
-    public ChessGame createGame(String name) throws DataAccessException {
+    public Game createGame(String name) throws DataAccessException {
         return null;
     }
 
     @Override
-    public ChessGame getGame(String id) throws DataAccessException {
+    public Game getGame(String id) throws DataAccessException {
         return null;
     }
 
