@@ -5,36 +5,27 @@ import server.Game;
 import server.User;
 import server.Auth;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class MemoryDataAccess implements DataAccess{
 
-    static List<Arrays> users;
-    static List<Arrays> auths;
-    static List<Arrays> session;
-    static List<Arrays> game;
+    static List<Arrays> users = new ArrayList<>();
+
+    static List<Arrays> auths = new ArrayList<>();
+    static List<Arrays> session = new ArrayList<>();
+    static List<Arrays> game = new ArrayList<>();
 
     public MemoryDataAccess() {
     }
 
-    @Override
-    public boolean clearUsers() throws DataAccessException {
+    public void clearAll() throws DataAccessException {
         users.clear();
-        return true;
-    }
-
-    @Override
-    public boolean clearGames() throws DataAccessException {
-        game.clear();
-        return true;
-    }
-
-    @Override
-    public boolean clearAuths() throws DataAccessException {
         auths.clear();
-        return true;
+        game.clear();
     }
+
 
     @Override
     public String getUser(String username, String passHash) throws DataAccessException {

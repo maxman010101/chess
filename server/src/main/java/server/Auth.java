@@ -1,10 +1,13 @@
 package server;
 
+import java.util.UUID;
+
 public class Auth {
     public String authToken;
     public String username;
 
     public Auth(String authToken, String username) {
+        authToken = UUID.randomUUID().toString();
         this.authToken = authToken;
         this.username = username;
     }

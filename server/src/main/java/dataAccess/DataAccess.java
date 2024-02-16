@@ -8,11 +8,7 @@ import server.Auth;
 import java.util.List;
 
 public interface DataAccess {
-    boolean clearUsers() throws DataAccessException;
-
-    boolean clearGames() throws DataAccessException;
-
-    boolean clearAuths() throws DataAccessException;
+    void clearAll() throws DataAccessException;
 
     String getUser(String username, String passHash) throws DataAccessException;
 
