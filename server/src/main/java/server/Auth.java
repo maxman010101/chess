@@ -7,7 +7,6 @@ public class Auth {
     public String username;
 
     public Auth(String authToken, String username) {
-        authToken = UUID.randomUUID().toString();
         this.authToken = authToken;
         this.username = username;
     }

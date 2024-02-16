@@ -1,21 +1,21 @@
 package dataAccess;
 
 import chess.ChessGame;
+import server.Auth;
 import server.Game;
 import server.User;
-import server.Auth;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class MemoryDataAccess implements DataAccess{
 
-    static List<Arrays> users = new ArrayList<>();
+    static List<User> users = new ArrayList<>();
 
-    static List<Arrays> auths = new ArrayList<>();
-    static List<Arrays> session = new ArrayList<>();
-    static List<Arrays> game = new ArrayList<>();
+    static List<Auth> auths = new ArrayList<>();
+    static List<Auth> session = new ArrayList<>();
+    static List<Game> game = new ArrayList<>();
 
     public MemoryDataAccess() {
     }
@@ -28,18 +28,26 @@ public class MemoryDataAccess implements DataAccess{
 
 
     @Override
-    public String getUser(String username, String passHash) throws DataAccessException {
+    public User getUser(String username, int passHash) throws DataAccessException {
+        for(int i = 0; i <= users.size(); i++){
+            if(Objects.equals(users.get(i).username, username)){
+                return users.get(i);
+            }
+        }
         return null;
     }
 
     @Override
-    public void createUser(String username, String passHash, String email) throws DataAccessException {
-
+    public void createUser(String username, int passHash, String email) throws DataAccessException {
+        User newUser = new User(username, passHash, email);
+        users.add(newUser);
     }
 
     @Override
-    public String createAuth(String username) throws DataAccessException {
-        return null;
+    public Auth createAuth(String username, String authToken) throws DataAccessException {
+        Auth auth = new Auth(authToken, username);
+        auths.add(auth);
+        return auth;
     }
 
     @Override

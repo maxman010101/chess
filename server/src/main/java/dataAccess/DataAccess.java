@@ -1,20 +1,20 @@
 package dataAccess;
 
 import chess.ChessGame;
+import server.Auth;
 import server.Game;
 import server.User;
-import server.Auth;
 
 import java.util.List;
 
 public interface DataAccess {
     void clearAll() throws DataAccessException;
 
-    String getUser(String username, String passHash) throws DataAccessException;
+    User getUser(String username, int passHash) throws DataAccessException;
 
-    void createUser(String username, String passHash, String email) throws DataAccessException;
+    void createUser(String username, int passHash, String email) throws DataAccessException;
 
-    String createAuth(String username) throws DataAccessException;
+    Auth createAuth(String username, String authToken) throws DataAccessException;
 
     boolean logOutUser(String authToken) throws DataAccessException;
 
