@@ -4,25 +4,19 @@ import com.google.gson.Gson;
 import spark.Request;
 import spark.Response;
 
-import javax.imageio.spi.RegisterableService;
 
 public class RegisterHandler {
 
     public RegisterHandler() {
     }
 
-    public String handleRequest(Request req, Response res) {
+    public String handleRequest(Request req, Response res) throws ResponseException {
         var gson = new Gson();
-        //ClearRequest request = (ClearRequest)gson.fromJson(reqData, ClearResponse.class);
+        RegisterRequest request = gson.fromJson(req.body(), RegisterRequest.class);
 
         UserServices service = new UserServices();
-        RegisterResponse result = service.register();
-        if(result.message() == null) {
-            res.status(200);
-        }
-        else {
-            res.status(403);
-        }
+        Auth result = service.register(request.username(), request.password(), request.email());
+        res.status(200);
         var body = gson.toJson(result);
         res.body(body);
         return body;

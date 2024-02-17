@@ -10,22 +10,21 @@ public class UserServices {
     public UserServices() {
     }
 
-    public RegisterResponse register(String username, String password, String email){
+    public Auth register(String username, String password, String email) throws ResponseException {
         DataAccess doa = new MemoryDataAccess();
-        int passHash = password.hashCode();
+        //int passHash = password.hashCode();
+        if(username == null || password == null || email == null){throw new ResponseException("Error: bad request", 400);}
         try {
-            if(doa.getUser(username, passHash) == null) {
-                doa.createUser(username, passHash, email);
+            if(doa.getUser(username) == null) {
+                doa.createUser(username, password, email);
                 String authToken = UUID.randomUUID().toString();
-                Auth auth = doa.createAuth(username, authToken);
-                return new RegisterResponse(auth, null);
+                return doa.createAuth(username, authToken);
             }
-            if(doa.getUser(username, passHash) != null){
-                return new RegisterResponse(null, "Error: already taken");
+            else{
+                throw new ResponseException("Error: already taken", 403);
             }
         } catch (DataAccessException e) {
-            return new RegisterResponse(null, "Error: description");
+            throw new ResponseException("Error: cannot access DB", 500);
         }
-        return null;
     }
 }
