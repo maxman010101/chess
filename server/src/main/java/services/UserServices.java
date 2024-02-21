@@ -1,8 +1,6 @@
 package services;
 
-import dataAccess.DataAccess;
-import dataAccess.DataAccessException;
-import dataAccess.MemoryDataAccess;
+import dataAccess.*;
 import models.Auth;
 import responses.ResponseException;
 
@@ -13,14 +11,15 @@ public class UserServices {
     }
 
     public Auth register(String username, String password, String email) throws ResponseException {
-        DataAccess doa = new MemoryDataAccess();
+        MemoryUserDataAccess userDoa = new MemoryUserDataAccess();
+        MemoryAuthDataAccess authDoa = new MemoryAuthDataAccess();
         //int passHash = password.hashCode();
         if(username == null || password == null || email == null){throw new ResponseException("Error: bad request", 400);}
         try {
-            if(doa.getUser(username) == null) {
-                doa.createUser(username, password, email);
+            if(userDoa.getUser(username) == null) {
+                userDoa.createUser(username, password, email);
                 String authToken = UUID.randomUUID().toString();
-                return doa.createAuth(username, authToken);
+                return authDoa.createAuth(username, authToken);
             }
             else{
                 throw new ResponseException("Error: already taken", 403);
@@ -31,4 +30,6 @@ public class UserServices {
     }
 
     public Auth login(String username, String password){return null;}
+    MemoryUserDataAccess userDoa = new MemoryUserDataAccess();
+
 }
