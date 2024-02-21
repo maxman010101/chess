@@ -1,4 +1,4 @@
-package server;
+package responses;
 
 public class ResponseException extends Exception {
     int statCode;

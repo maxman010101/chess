@@ -1,9 +1,9 @@
 package dataAccess;
 
 import chess.ChessGame;
-import server.Auth;
-import server.Game;
-import server.User;
+import models.Auth;
+import models.Game;
+import models.User;
 
 import java.util.List;
 
@@ -28,9 +28,9 @@ public interface DataAccess {
 
     Game getGame(int id) throws DataAccessException;
 
-    void saveGame(String clientColor, ChessGame game) throws DataAccessException;
+    void saveGame(ChessGame.TeamColor clientColor, ChessGame game) throws DataAccessException;
 
-    boolean validColorToJoin(String color);
+    boolean validColorToJoin(ChessGame.TeamColor color);
 }
 
 

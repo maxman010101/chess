@@ -1,21 +1,23 @@
-package server;
+package handlers;
 
 import com.google.gson.Gson;
+import models.Auth;
+import requests.LoginRequest;
+import responses.ResponseException;
+import services.UserServices;
 import spark.Request;
 import spark.Response;
 
-
-public class RegisterHandler {
-
-    public RegisterHandler() {
+public class LoginHandler {
+    public LoginHandler() {
     }
 
     public String handleRequest(Request req, Response res) throws ResponseException {
         var gson = new Gson();
-        RegisterRequest request = gson.fromJson(req.body(), RegisterRequest.class);
+        LoginRequest request = gson.fromJson(req.body(), LoginRequest.class);
 
         UserServices service = new UserServices();
-        Auth result = service.register(request.username(), request.password(), request.email());
+        Auth result = service.login(request.username(), request.password());
         res.status(200);
         var body = gson.toJson(result);
         res.body(body);

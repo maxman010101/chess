@@ -1,9 +1,9 @@
 package dataAccess;
 
 import chess.ChessGame;
-import server.Auth;
-import server.Game;
-import server.User;
+import models.Auth;
+import models.Game;
+import models.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,10 +98,11 @@ public class MemoryDataAccess implements DataAccess{
                 return game;
             }
         }
+        return null;
     }
 
     @Override
-    public void saveGame(String clientColor, ChessGame game) throws DataAccessException {
+    public void saveGame(ChessGame.TeamColor clientColor, ChessGame game) throws DataAccessException {
         for (Game value : games) {
             if (Objects.equals(value.game, game)) {
                 if (validColorToJoin(clientColor)){
@@ -111,7 +112,8 @@ public class MemoryDataAccess implements DataAccess{
         }
     }
 
-    public boolean validColorToJoin(String color){
-        return true;
+    public boolean validColorToJoin(ChessGame.TeamColor color){
+        {
+        return true;}
     }
 }

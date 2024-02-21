@@ -1,8 +1,9 @@
-package server;
+package services;
 
 import dataAccess.DataAccess;
 import dataAccess.DataAccessException;
 import dataAccess.MemoryDataAccess;
+import responses.ClearResponse;
 
 public class ClearService {
     public ClearService() {

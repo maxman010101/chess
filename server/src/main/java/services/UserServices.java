@@ -1,8 +1,10 @@
-package server;
+package services;
 
 import dataAccess.DataAccess;
 import dataAccess.DataAccessException;
 import dataAccess.MemoryDataAccess;
+import models.Auth;
+import responses.ResponseException;
 
 import java.util.UUID;
 
@@ -27,4 +29,6 @@ public class UserServices {
             throw new ResponseException("Error: cannot access DB", 500);
         }
     }
+
+    public Auth login(String username, String password){return null;}
 }
