@@ -21,9 +21,9 @@ public class MemoryUserDataAccess implements UserDataAccess{
     }
 
     @Override
-    public User getUser(String username) throws DataAccessException {
+    public User getUser(String username, String password) throws DataAccessException {
         for (User user : users) {
-            if (Objects.equals(user.username, username)) {
+            if (Objects.equals(user.username, username) && Objects.equals(user.password, password)) {
                 return user;
             }
         }

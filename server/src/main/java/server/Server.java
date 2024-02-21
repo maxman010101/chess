@@ -19,7 +19,7 @@ public class Server {
         Spark.delete("/db", (req, res) -> (new ClearHandler()).handleRequest(req, res));
         //Spark.delete("/db", this::clear);
         Spark.post("/user", (req, res) -> (new RegisterHandler()).handleRequest(req, res));
-        Spark.post("/user", (req, res) -> (new LoginHandler()).handleRequest(req, res));
+        Spark.post("/session", (req, res) -> (new LoginHandler()).handleRequest(req, res));
 
 
         Spark.exception(ResponseException.class, (e, request, response) -> {
