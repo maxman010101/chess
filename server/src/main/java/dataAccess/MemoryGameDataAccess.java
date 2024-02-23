@@ -46,7 +46,7 @@ public class MemoryGameDataAccess implements GameDataAccess{
         for (Game value : games) {
             if (Objects.equals(value.game, game)) {
                 if (validColorToJoin(clientColor)){
-
+                    value.game = game;
                 }
             }
         }

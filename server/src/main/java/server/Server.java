@@ -1,6 +1,7 @@
 package server;
 
 import handlers.ClearHandler;
+import handlers.LogOutHandler;
 import handlers.LoginHandler;
 import handlers.RegisterHandler;
 import spark.*;
@@ -20,6 +21,7 @@ public class Server {
         //Spark.delete("/db", this::clear);
         Spark.post("/user", (req, res) -> (new RegisterHandler()).handleRequest(req, res));
         Spark.post("/session", (req, res) -> (new LoginHandler()).handleRequest(req, res));
+        Spark.delete("/session", (req, res) -> (new LogOutHandler()).handleRequest(req, res));
 
 
         Spark.exception(ResponseException.class, (e, request, response) -> {

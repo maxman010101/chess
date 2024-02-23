@@ -45,9 +45,9 @@ public class MemoryUserDataAccess implements UserDataAccess{
 
     @Override
     public void logOutUser(String authToken) throws DataAccessException {
-        for(int i = 0; i < session.size(); i++){
-            if(Objects.equals(session.get(i).authToken, authToken)){
-                session.remove(session.get(i));
+        for(Auth auth : session){
+            if(Objects.equals(auth.authToken, authToken)){
+                session.remove(auth);
             }
         }
     }

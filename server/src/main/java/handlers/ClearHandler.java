@@ -13,7 +13,6 @@ public class ClearHandler {
 
     public String handleRequest(Request req, Response res) {
         var gson = new Gson();
-        //ClearRequest request = (ClearRequest)gson.fromJson(reqData, ClearResponse.class);
 
         ClearService service = new ClearService();
         ClearResponse result = service.clearData();

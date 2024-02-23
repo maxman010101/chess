@@ -28,6 +28,15 @@ public class MemoryAuthDataAccess implements AuthDataAccess{
         return auth;
     }
 
+    public void removeAuth(String authToken) throws DataAccessException{
+        for(Auth auth : auths){
+            if(Objects.equals(auth.authToken, authToken)){
+                auths.remove(auth);
+                break;
+            }
+        }
+    }
+
     @Override
     public Auth getAuth(String authToken) throws DataAccessException {
         for (Auth auth : auths) {

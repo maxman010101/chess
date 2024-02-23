@@ -2,6 +2,7 @@ package services;
 
 import dataAccess.*;
 import models.Auth;
+import responses.LogOutResponse;
 import responses.ResponseException;
 
 import java.util.UUID;
@@ -43,5 +44,21 @@ public class UserServices {
             throw new ResponseException("Error: cannot access DB", 500);
         }
     }
+    public LogOutResponse logout(String authToken) throws DataAccessException, ResponseException {
+        MemoryAuthDataAccess authDoa = new MemoryAuthDataAccess();
+        try{
+            if(authDoa.getAuth(authToken) != null){
+                authDoa.removeAuth(authToken);
+                return new LogOutResponse(null);
+            }
 
-}
+            else{
+                throw new ResponseException("Error: unauthorized", 401);
+            }
+        }
+        catch(DataAccessException e){
+            throw new ResponseException("Error: cannot access DB", 500);
+        }
+        }
+    }
+

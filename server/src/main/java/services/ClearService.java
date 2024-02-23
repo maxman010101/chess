@@ -1,8 +1,6 @@
 package services;
 
-import dataAccess.DataAccess;
-import dataAccess.DataAccessException;
-import dataAccess.MemoryDataAccess;
+import dataAccess.*;
 import responses.ClearResponse;
 
 public class ClearService {
@@ -10,9 +8,13 @@ public class ClearService {
     }
 
     public ClearResponse clearData() {
-        DataAccess dao = new MemoryDataAccess();
+        UserDataAccess userDao = new MemoryUserDataAccess();
+        AuthDataAccess authDao = new MemoryAuthDataAccess();
+        GameDataAccess gameDao = new MemoryGameDataAccess();
         try {
-            dao.clearAll();
+            userDao.clearUsers();
+            authDao.clearAuths();
+            gameDao.clearGames();
             return new ClearResponse(null);
         } catch (DataAccessException e) {
             return new ClearResponse("Error: description");
