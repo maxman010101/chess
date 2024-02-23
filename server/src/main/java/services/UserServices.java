@@ -14,12 +14,12 @@ public class UserServices {
     public Auth register(String username, String password, String email) throws ResponseException {
         MemoryUserDataAccess userDoa = new MemoryUserDataAccess();
         MemoryAuthDataAccess authDoa = new MemoryAuthDataAccess();
-        //int passHash = password.hashCode();
         if(username == null || password == null || email == null){throw new ResponseException("Error: bad request", 400);}
         try {
             if(userDoa.getUser(username, password) == null) {
                 userDoa.createUser(username, password, email);
                 String authToken = UUID.randomUUID().toString();
+                while(authDoa.getAuth(authToken) != null) {authToken = UUID.randomUUID().toString();}
                 return authDoa.createAuth(username, authToken);
             }
             else{
@@ -32,9 +32,11 @@ public class UserServices {
 
     public Auth login(String username, String password) throws ResponseException {
         MemoryUserDataAccess userDoa = new MemoryUserDataAccess();
+        MemoryAuthDataAccess authDoa = new MemoryAuthDataAccess();
         try {
             if(userDoa.getUser(username, password) != null) {
                 String authToken = UUID.randomUUID().toString();
+                while(authDoa.getAuth(authToken) != null) {authToken = UUID.randomUUID().toString();}
                 return userDoa.loginUser(username, authToken);
             }
             else{
