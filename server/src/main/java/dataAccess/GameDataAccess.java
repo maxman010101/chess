@@ -13,7 +13,7 @@ public interface GameDataAccess {
 
     Game getGame(int id) throws DataAccessException;
 
-    void saveGame(ChessGame.TeamColor clientColor, ChessGame game) throws DataAccessException;
+    void saveGame(int gameID, ChessGame.TeamColor clientColor, String username) throws DataAccessException;
 
-    boolean validColorToJoin(ChessGame.TeamColor color);
+    boolean validColorToJoin(ChessGame.TeamColor color, ChessGame.TeamColor clientColor, String colorUsername);
 }

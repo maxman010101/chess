@@ -1,27 +1,28 @@
 package handlers;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import requests.CreateGameRequest;
-import requests.LoginRequest;
+import requests.JoinGameRequest;
 import responses.CreateGameResponse;
-import responses.GameListResponse;
+import responses.JoinGameResponse;
 import responses.ResponseException;
 import services.GameServices;
 import spark.Request;
 import spark.Response;
 
-public class CreateGameHandler {
-    public CreateGameHandler() {
+public class JoinGameHandler {
+    public JoinGameHandler() {
     }
 
     public String handleRequest(Request req, Response res) throws ResponseException, DataAccessException {
         var gson = new Gson();
 
-        CreateGameRequest request = gson.fromJson(req.body(), CreateGameRequest.class);
+        JoinGameRequest request = gson.fromJson(req.body(), JoinGameRequest.class);
         GameServices service = new GameServices();
         String authToken = req.headers("Authorization");
-        CreateGameResponse result = service.createGame(authToken, request.gameName());
+        JoinGameResponse result = service.joinGame(authToken, request.playerColor(), request.gameID());
         res.status(200);
         var body = gson.toJson(result);
         res.body(body);

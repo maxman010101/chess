@@ -1,13 +1,11 @@
 package services;
 
+import chess.ChessGame;
 import dataAccess.DataAccessException;
 import dataAccess.MemoryAuthDataAccess;
 import dataAccess.MemoryGameDataAccess;
 import models.Game;
-import responses.CreateGameResponse;
-import responses.GameListResponse;
-import responses.LogOutResponse;
-import responses.ResponseException;
+import responses.*;
 
 import java.util.List;
 
@@ -29,8 +27,7 @@ public class GameServices {
             else{
                 throw new ResponseException("Error: unauthorized", 401);
             }
-        }
-        catch(DataAccessException | ResponseException e){
+        } catch(DataAccessException e){
             throw new ResponseException("Error: cannot access DB", 500);
         }
     }
@@ -52,5 +49,31 @@ public class GameServices {
             throw new ResponseException("Error: cannot access DB", 500);
         }
     }
+
+    public JoinGameResponse joinGame(String authToken, ChessGame.TeamColor playerColor, int gameID) throws ResponseException {
+        MemoryGameDataAccess gameDoa = new MemoryGameDataAccess();
+        MemoryAuthDataAccess authDoa = new MemoryAuthDataAccess();
+
+        if(gameID < 1){throw new ResponseException("Error: bad request", 400);}
+        try{
+            if(authDoa.getAuth(authToken) != null){
+                Game game = gameDoa.getGame(gameID);
+                if(gameDoa.validColorToJoin(ChessGame.TeamColor.WHITE, playerColor, game.whiteUsername)
+                        || gameDoa.validColorToJoin(ChessGame.TeamColor.BLACK, playerColor, game.blackUsername) || playerColor == null){
+                gameDoa.saveGame(gameID, playerColor, authDoa.getAuth(authToken).username);
+                return new JoinGameResponse(null);
+                }
+                else
+                    throw  new ResponseException("Error: already taken", 403);
+            }
+
+            else{
+                throw new ResponseException("Error: unauthorized", 401);
+            }
+        } catch(DataAccessException e){
+            throw new ResponseException("Error: cannot access DB", 500);
+        }
+    }
 }
+
 
