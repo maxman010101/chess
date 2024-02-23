@@ -9,7 +9,7 @@ public interface GameDataAccess {
     void clearGames() throws DataAccessException;
 
     List<Game> listGames(String authToken) throws DataAccessException;
-    Game createGame(String name, String whiteUser, String blackUser, ChessGame chessgame) throws DataAccessException;
+    int createGame(String name) throws DataAccessException;
 
     Game getGame(int id) throws DataAccessException;
 

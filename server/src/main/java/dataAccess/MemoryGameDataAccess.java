@@ -25,10 +25,11 @@ public class MemoryGameDataAccess implements GameDataAccess{
     }
 
     @Override
-    public Game createGame(String name, String whiteUser, String blackUser, ChessGame chessgame) throws DataAccessException {
-        Game game = new Game(games.size()+1, name, null, null, chessgame);
+    public int createGame(String name) throws DataAccessException {
+        int gameID = games.size();
+        Game game = new Game(games.size(), name, null, null, new ChessGame());
         games.add(game);
-        return game;
+        return gameID;
     }
 
     @Override
