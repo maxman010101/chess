@@ -45,7 +45,7 @@ public class GameServices {
                 throw new ResponseException("Error: unauthorized", 401);
             }
         }
-        catch(DataAccessException | ResponseException e){
+        catch(DataAccessException e){
             throw new ResponseException("Error: cannot access DB", 500);
         }
     }

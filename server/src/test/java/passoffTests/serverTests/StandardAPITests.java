@@ -187,7 +187,6 @@ public class StandardAPITests {
                 logoutResult.message != null && logoutResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Response gave an error message");
 
-
         TestModels.TestJoinRequest joinRequest = new TestModels.TestJoinRequest();
         joinRequest.gameID = createResult.gameID;
         joinRequest.playerColor = ChessGame.TeamColor.WHITE;

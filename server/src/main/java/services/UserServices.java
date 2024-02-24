@@ -16,10 +16,9 @@ public class UserServices {
         MemoryAuthDataAccess authDoa = new MemoryAuthDataAccess();
         if(username == null || password == null || email == null){throw new ResponseException("Error: bad request", 400);}
         try {
-            if(userDoa.getUser(username, password) == null) {
+            if(userDoa.getUser(username) == null) {
                 userDoa.createUser(username, password, email);
                 String authToken = UUID.randomUUID().toString();
-                while(authDoa.getAuth(authToken) != null) {authToken = UUID.randomUUID().toString();}
                 return authDoa.createAuth(username, authToken);
             }
             else{
@@ -34,10 +33,9 @@ public class UserServices {
         MemoryUserDataAccess userDoa = new MemoryUserDataAccess();
         MemoryAuthDataAccess authDoa = new MemoryAuthDataAccess();
         try {
-            if(userDoa.getUser(username, password) != null) {
+            if(userDoa.checkLogin(username, password) != null) {
                 String authToken = UUID.randomUUID().toString();
-                while(authDoa.getAuth(authToken) != null) {authToken = UUID.randomUUID().toString();}
-                return userDoa.loginUser(username, authToken);
+                return authDoa.createAuth(username, authToken);
             }
             else{
                 throw new ResponseException("Error: unauthorized", 401);
