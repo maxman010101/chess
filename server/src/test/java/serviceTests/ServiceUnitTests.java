@@ -7,13 +7,10 @@ import dataAccess.MemoryGameDataAccess;
 import dataAccess.MemoryUserDataAccess;
 import models.Auth;
 import models.Game;
-import models.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import responses.CreateGameResponse;
-import responses.GameListResponse;
-import responses.JoinGameResponse;
 import responses.ResponseException;
 import services.ClearService;
 import services.GameServices;
@@ -57,6 +54,8 @@ public class ServiceUnitTests {
         String existingEmail = "newEmail";
         String secondUsername = "newUsername";
 
+        //registering with an already existing username
+
         userServices.register(existingUsername, existingPassword, existingEmail);
         MemoryUserDataAccess userDoa = new MemoryUserDataAccess();
         Assertions.assertNotNull(userDoa.getUser(secondUsername));
@@ -78,6 +77,8 @@ public class ServiceUnitTests {
         String registeredPassword = "newPass";
         String email = "newEmail";
         String wrongPassword = "mewPas";
+
+        //logging in with wrong password
 
         userServices.register(username, registeredPassword, email);
         MemoryUserDataAccess userDoa = new MemoryUserDataAccess();
@@ -128,9 +129,8 @@ public class ServiceUnitTests {
         String username = "maxman010101";
         String password = "KingSlayer123";
         String email = "abc123@gmail.com";
-        String gameName = "gameGame";
 
-        //trying to make a game without logging in/when you are logged out
+        //trying to make a game without logging in/when you are logged out(part of the create game method fails if getAuth returns null)
 
         Auth user = userServices.register(username, password, email);
         String token = user.authToken;
@@ -162,7 +162,7 @@ public class ServiceUnitTests {
     @Test
     public void listGameFail() throws ResponseException, DataAccessException {
 
-        //failed getting game list if you are not logged in
+        //failed getting game list if you are not logged in(list game fails if getAuth returns null)
 
         String username = "maxman010101";
         String password = "KingSlayer123";
