@@ -100,7 +100,7 @@ public class ServiceUnitTests {
     }
 
     @Test
-    public void logoutFail() throws ResponseException, DataAccessException {
+    public void logoutFail() throws DataAccessException {
 
         //failing a logout by not even logging in or registering first
 
