@@ -34,7 +34,7 @@ public class ServiceUnitTests {
         gameServices = new GameServices();
         expected = new ArrayList<>();
         actual = new ArrayList<>();
-
+        clearService.clearData();
     }
     @Test
     public void registerSuccess() throws ResponseException {
