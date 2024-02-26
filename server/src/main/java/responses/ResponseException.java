@@ -12,7 +12,4 @@ public class ResponseException extends Exception {
         return statCode;
     }
 
-    public void setStatCode(int statCode) {
-        this.statCode = statCode;
-    }
 }
