@@ -148,11 +148,11 @@ public class ChessPiece {
             }
             if(pos.row + 1 <= 8 && pos.col - 1 > 0){
                 possPosit = new ChessPosition(pos.row + 1, pos.col - 1);
-                pawnWhiteAttack(board, pos, possMoves, possPosit, ChessGame.TeamColor.BLACK);
+                whitePawnAttack(board, pos, possMoves, possPosit);
             }
             if(pos.row + 1 <= 8 && pos.col + 1 <= 8){
                 possPosit = new ChessPosition(pos.row + 1, pos.col + 1);
-                pawnWhiteAttack(board, pos, possMoves, possPosit, ChessGame.TeamColor.BLACK);
+                whitePawnAttack(board, pos, possMoves, possPosit);
             }
         }
         if(board.getPiece(pos).getTeamColor() == ChessGame.TeamColor.BLACK){
@@ -180,17 +180,17 @@ public class ChessPiece {
             }
             if(pos.row - 1 > 0 && pos.col - 1 > 0){
                 possPosit = new ChessPosition(pos.row - 1, pos.col - 1);
-                pawnBlackAttack(board, pos, possMoves, possPosit);
+                blackPawnAttack(board, pos, possMoves, possPosit);
             }
             if(pos.row - 1 > 0 && pos.col + 1 <= 8){
                 possPosit = new ChessPosition(pos.row - 1, pos.col + 1);
-                pawnBlackAttack(board, pos, possMoves, possPosit);
+                blackPawnAttack(board, pos, possMoves, possPosit);
             }
         }
         return possMoves;
     }
 
-    private void pawnBlackAttack(ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves, ChessPosition possPosit) {
+    private void blackPawnAttack(ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves, ChessPosition possPosit) {
         ChessPiece tempPiece = board.getPiece(possPosit);
         if(tempPiece != null && tempPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
             if(possPosit.row == 1){
@@ -205,9 +205,9 @@ public class ChessPiece {
         }
     }
 
-    private void pawnWhiteAttack(ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves, ChessPosition possPosit, ChessGame.TeamColor enemy) {
+    private void whitePawnAttack(ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves, ChessPosition possPosit) {
         ChessPiece tempPiece = board.getPiece(possPosit);
-        if(tempPiece != null && tempPiece.getTeamColor() == enemy){
+        if(tempPiece != null && tempPiece.getTeamColor() == ChessGame.TeamColor.BLACK){
             if(possPosit.row == 8){
                 possMoves.add(new ChessMove(pos, possPosit, PieceType.QUEEN));
                 possMoves.add(new ChessMove(pos, possPosit, PieceType.BISHOP));
@@ -295,26 +295,141 @@ public class ChessPiece {
     public Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition pos) {
         Collection<ChessMove> possMoves = new HashSet<>();
         if(board.getPiece(pos).getTeamColor() == ChessGame.TeamColor.WHITE){
-            vertAndHorizMoves(board, pos, possMoves, ChessGame.TeamColor.BLACK, ChessGame.TeamColor.WHITE);
-            diagMoves(board, pos, possMoves, ChessGame.TeamColor.BLACK, ChessGame.TeamColor.WHITE);
+            vertAndHorizMoves(board, pos, possMoves);
+            whiteDiagMoves(board, pos, possMoves);
         }
         if(board.getPiece(pos).getTeamColor() == ChessGame.TeamColor.BLACK){
-            vertAndHorizMoves(board, pos, possMoves, ChessGame.TeamColor.WHITE, ChessGame.TeamColor.BLACK);
-            diagMoves(board, pos, possMoves, ChessGame.TeamColor.WHITE, ChessGame.TeamColor.BLACK);
+            blackHorizAndVertMoves(board, pos, possMoves);
+            blackVertMoves(board, pos, possMoves);
         }
         return possMoves;
     }
 
-    private void diagMoves(ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves, ChessGame.TeamColor enemy, ChessGame.TeamColor yourPieceColor) {
+    private void blackVertMoves(ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves) {
         if(pos.row + 1 <= 8 && pos.col + 1 <= 8){
             ChessPosition possPosit = new ChessPosition(pos.row + 1, pos.col + 1);
             while(possPosit.row <= 8 && possPosit.col <= 8){
                 ChessPiece tempPiece = board.getPiece(possPosit);
-                if(tempPiece != null && tempPiece.getTeamColor() == enemy){
+                if(tempPiece != null && tempPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
                     possMoves.add(new ChessMove(pos, possPosit, null));
                     break;
                 }
-                else if(isValidMove(possPosit, yourPieceColor, board)) {
+                else if(isValidMove(possPosit, ChessGame.TeamColor.BLACK, board)) {
+                    possMoves.add(new ChessMove(pos, possPosit, null));
+                    possPosit = new ChessPosition(possPosit.row + 1, possPosit.col + 1);
+                }
+                else
+                    break;
+            }
+        }
+        if(pos.row + 1 <= 8 && pos.col - 1 > 0){
+            ChessPosition possPosit = new ChessPosition(pos.row + 1, pos.col - 1);
+            while(possPosit.row <= 8 && possPosit.col > 0){
+                ChessPiece tempPiece = board.getPiece(possPosit);
+                if(tempPiece != null && tempPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                    possMoves.add(new ChessMove(pos, possPosit, null));
+                    break;
+                }
+                else if(isValidMove(possPosit, ChessGame.TeamColor.BLACK, board)) {
+                    possMoves.add(new ChessMove(pos, possPosit, null));
+                    possPosit = new ChessPosition(possPosit.row + 1, possPosit.col - 1);
+                }
+                else
+                    break;
+            }
+        }
+        if(pos.row - 1 > 0 && pos.col + 1 <= 8){
+            ChessPosition possPosit = new ChessPosition(pos.row - 1, pos.col + 1);
+            while(possPosit.row > 0 && possPosit.col <= 8){
+                ChessPiece tempPiece = board.getPiece(possPosit);
+                if(tempPiece != null && tempPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                    possMoves.add(new ChessMove(pos, possPosit, null));
+                    break;
+                }
+                else if(isValidMove(possPosit, ChessGame.TeamColor.BLACK, board)) {
+                    possMoves.add(new ChessMove(pos, possPosit, null));
+                    possPosit = new ChessPosition(possPosit.row - 1, possPosit.col + 1);
+                }
+                else
+                    break;
+            }
+        }
+        if(pos.row - 1 > 0 && pos.col - 1 > 0){
+            ChessPosition possPosit = new ChessPosition(pos.row - 1, pos.col - 1);
+            while(possPosit.row > 0 && possPosit.col > 0){
+                ChessPiece tempPiece = board.getPiece(possPosit);
+                if(tempPiece != null && tempPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                    possMoves.add(new ChessMove(pos, possPosit, null));
+                    break;
+                }
+                else if(isValidMove(possPosit, ChessGame.TeamColor.BLACK, board)) {
+                    possMoves.add(new ChessMove(pos, possPosit, null));
+                    possPosit = new ChessPosition(possPosit.row - 1, possPosit.col - 1);
+                }
+                else
+                    break;
+            }
+        }
+    }
+
+    private void blackHorizAndVertMoves(ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves) {
+        if(pos.row + 1 <= 8){
+            for(int r = pos.row + 1; r <= 8; r++) {
+                if (goodBlackMoveUpDown(board, pos, possMoves, r)) break;
+            }
+        }
+        if(pos.row - 1 > 0){
+            for(int r = pos.row - 1; r > 0; r--){
+                if (goodBlackMoveUpDown(board, pos, possMoves, r)) break;
+            }
+        }
+        if(pos.col + 1 <= 8){
+            for(int c = pos.col + 1; c <= 8; c++){
+                if (goodSideBlackMove(board, pos, possMoves, c)) break;
+            }
+        }
+        if(pos.col - 1 > 0) {
+            for (int c = pos.col - 1; c > 0; c--) {
+                if (goodSideBlackMove(board, pos, possMoves, c)) break;
+            }
+        }
+    }
+
+    private boolean goodSideBlackMove(ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves, int c) {
+        ChessPosition possPosit = new ChessPosition(pos.row, c);
+        ChessPiece tempPiece = board.getPiece(possPosit);
+        return BlackSideMove(board, pos, possMoves, possPosit, tempPiece);
+    }
+
+    private boolean BlackSideMove(ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves, ChessPosition possPosit, ChessPiece tempPiece) {
+        if(tempPiece != null && tempPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
+            possMoves.add(new ChessMove(pos, possPosit, null));
+            return true;
+        }
+        else if(isValidMove(possPosit, ChessGame.TeamColor.BLACK, board)) {
+            possMoves.add(new ChessMove(pos, possPosit, null));
+        }
+        else
+            return true;
+        return false;
+    }
+
+    private boolean goodBlackMoveUpDown(ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves, int r) {
+        ChessPosition possPosit = new ChessPosition(r, pos.col);
+        ChessPiece tempPiece = board.getPiece(possPosit);
+        return BlackSideMove(board, pos, possMoves, possPosit, tempPiece);
+    }
+
+    private void whiteDiagMoves(ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves) {
+        if(pos.row + 1 <= 8 && pos.col + 1 <= 8){
+            ChessPosition possPosit = new ChessPosition(pos.row + 1, pos.col + 1);
+            while(possPosit.row <= 8 && possPosit.col <= 8){
+                ChessPiece tempPiece = board.getPiece(possPosit);
+                if(tempPiece != null && tempPiece.getTeamColor() == ChessGame.TeamColor.BLACK){
+                    possMoves.add(new ChessMove(pos, possPosit, null));
+                    break;
+                }
+                else if(isValidMove(possPosit, ChessGame.TeamColor.WHITE, board)) {
                     possMoves.add(new ChessMove(pos, possPosit, null));
                     possPosit = new ChessPosition(possPosit.row + 1, possPosit.col + 1);
                 }
@@ -372,75 +487,61 @@ public class ChessPiece {
         }
     }
 
-    private void vertAndHorizMoves(ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves, ChessGame.TeamColor enemy, ChessGame.TeamColor yourPieceColor) {
+    private void vertAndHorizMoves(ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves) {
         if(pos.row + 1 <= 8){
             for(int r = pos.row + 1; r <= 8; r++) {
-                ChessPosition possPosit = new ChessPosition(r, pos.col);
-                ChessPiece tempPiece = board.getPiece(possPosit);
-                if(tempPiece != null && tempPiece.getTeamColor() == enemy){
-                    possMoves.add(new ChessMove(pos, possPosit, null));
-                    break;
-                }
-                else if(isValidMove(possPosit, yourPieceColor, board)) {
-                    possMoves.add(new ChessMove(pos, possPosit, null));
-                }
-                else
-                    break;
+                if (goodMovingSideways(board, pos, possMoves, r)) break;
             }
         }
         if(pos.row - 1 > 0){
             for(int r = pos.row - 1; r > 0; r--){
-                ChessPosition possPosit = new ChessPosition(r, pos.col);
-                ChessPiece tempPiece = board.getPiece(possPosit);
-                if(tempPiece != null && tempPiece.getTeamColor() == ChessGame.TeamColor.BLACK){
-                    possMoves.add(new ChessMove(pos, possPosit, null));
-                    break;
-                }
-                else if(isValidMove(possPosit, ChessGame.TeamColor.WHITE, board)) {
-                    possMoves.add(new ChessMove(pos, possPosit, null));
-                }
-                else
-                    break;
+                if (goodMovingSideways(board, pos, possMoves, r)) break;
             }
         }
         if(pos.col + 1 <= 8){
             for(int c = pos.col + 1; c <= 8; c++){
-                ChessPosition possPosit = new ChessPosition(pos.row, c);
-                ChessPiece tempPiece = board.getPiece(possPosit);
-                if(tempPiece != null && tempPiece.getTeamColor() == ChessGame.TeamColor.BLACK){
-                    possMoves.add(new ChessMove(pos, possPosit, null));
-                    break;
-                }
-                else if(isValidMove(possPosit, ChessGame.TeamColor.WHITE, board)) {
-                    possMoves.add(new ChessMove(pos, possPosit, null));
-                }
-                else
-                    break;
+                if (goodMovingVertically(board, pos, possMoves, c)) break;
             }
         }
         if(pos.col - 1 > 0) {
             for (int c = pos.col - 1; c > 0; c--) {
-                ChessPosition possPosit = new ChessPosition(pos.row, c);
-                ChessPiece tempPiece = board.getPiece(possPosit);
-                if(tempPiece != null && tempPiece.getTeamColor() == ChessGame.TeamColor.BLACK){
-                    possMoves.add(new ChessMove(pos, possPosit, null));
-                    break;
-                }
-                else if (isValidMove(possPosit, ChessGame.TeamColor.WHITE, board)) {
-                    possMoves.add(new ChessMove(pos, possPosit, null));
-                } else
-                    break;
+                if (goodMovingVertically(board, pos, possMoves, c)) break;
             }
         }
+    }
+
+    private boolean goodMovingVertically(ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves, int c) {
+        ChessPosition possPosit = new ChessPosition(pos.row, c);
+        ChessPiece tempPiece = board.getPiece(possPosit);
+        return movingVertical(board, pos, possMoves, possPosit, tempPiece);
+    }
+
+    private boolean movingVertical(ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves, ChessPosition possPosit, ChessPiece tempPiece) {
+        if(tempPiece != null && tempPiece.getTeamColor() == ChessGame.TeamColor.BLACK){
+            possMoves.add(new ChessMove(pos, possPosit, null));
+            return true;
+        }
+        else if(isValidMove(possPosit, ChessGame.TeamColor.WHITE, board)) {
+            possMoves.add(new ChessMove(pos, possPosit, null));
+        }
+        else
+            return true;
+        return false;
+    }
+
+    private boolean goodMovingSideways(ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves, int r) {
+        ChessPosition possPosit = new ChessPosition(r, pos.col);
+        ChessPiece tempPiece = board.getPiece(possPosit);
+        return movingVertical(board, pos, possMoves, possPosit, tempPiece);
     }
 
     public Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition pos) {
         Collection<ChessMove> possMoves = new HashSet<>();
         if(board.getPiece(pos).getTeamColor() == ChessGame.TeamColor.WHITE){
-            vertAndHorizMoves(board, pos, possMoves, ChessGame.TeamColor.BLACK, ChessGame.TeamColor.WHITE);
+            vertAndHorizMoves(board, pos, possMoves);
         }
         if(board.getPiece(pos).getTeamColor() == ChessGame.TeamColor.BLACK){
-            vertAndHorizMoves(board, pos, possMoves, ChessGame.TeamColor.WHITE, ChessGame.TeamColor.BLACK);
+            blackHorizAndVertMoves(board, pos, possMoves);
         }
         return possMoves;
     }
@@ -551,10 +652,10 @@ public class ChessPiece {
     public Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition pos) {
         Collection<ChessMove> possMoves = new HashSet<>();
         if(board.getPiece(pos).getTeamColor() == ChessGame.TeamColor.WHITE){
-            diagMoves(board, pos, possMoves, ChessGame.TeamColor.BLACK, ChessGame.TeamColor.WHITE);
+            whiteDiagMoves(board, pos, possMoves);
         }
         if(board.getPiece(pos).getTeamColor() == ChessGame.TeamColor.BLACK){
-            diagMoves(board, pos, possMoves, ChessGame.TeamColor.WHITE, ChessGame.TeamColor.BLACK);
+            blackVertMoves(board, pos, possMoves);
         }
         return possMoves;
     }

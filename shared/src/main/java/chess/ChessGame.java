@@ -41,13 +41,6 @@ public class ChessGame {
         BLACK
     }
 
-    public void addPiecesToBoard(ChessPiece copyGamePiece, Collection<ChessMove> validMoves, ChessMove move){
-        gameBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col), copyGamePiece);
-        gameBoard.addPiece(new ChessPosition(move.startPosition.row, move.startPosition.col), null);
-        if(!(isInCheck(copyGamePiece.getTeamColor()))){
-            validMoves.add(move);
-        }
-    }
 
     /**
      * Gets a valid moves for a piece at the given location
@@ -64,10 +57,18 @@ public class ChessGame {
                 ChessBoard copyBoard = makeDeepCopyOfBoard(gameBoard);
                 ChessPiece copyCurrentPiece = copyBoard.getPiece(move.startPosition);
                 if(copyCurrentPiece != null && !(isInCheck(copyCurrentPiece.getTeamColor()))){
-                    addPiecesToBoard(copyCurrentPiece, valid, move);
+                    gameBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col), copyCurrentPiece);
+                    gameBoard.addPiece(new ChessPosition(move.startPosition.row, move.startPosition.col), null);
+                    if(!(isInCheck(copyCurrentPiece.getTeamColor()))){
+                        valid.add(move);
+                    }
                 }
                 if(copyCurrentPiece != null && isInCheck(copyCurrentPiece.getTeamColor())){
-                    addPiecesToBoard(copyCurrentPiece, valid, move);
+                    gameBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col), copyCurrentPiece);
+                    gameBoard.addPiece(new ChessPosition(move.startPosition.row, move.startPosition.col), null);
+                    if(!(isInCheck(copyCurrentPiece.getTeamColor()))){
+                        valid.add(move);
+                    }
                 }
                 gameBoard = copyBoard;
             }
