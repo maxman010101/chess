@@ -87,15 +87,15 @@ public class ChessPiece {
     /** helper function that checks the availability/validity of possible moves for pieces
      * @return true or false
      */
-    public boolean isValidMove(ChessPosition possiblePosition, ChessGame.TeamColor team_color, ChessBoard board){
-        if(team_color == ChessGame.TeamColor.WHITE){
+    public boolean isValidMove(ChessPosition possiblePosition, ChessGame.TeamColor teamColor, ChessBoard board){
+        if(teamColor == ChessGame.TeamColor.WHITE){
             return (possiblePosition.row > 0 && possiblePosition.row <= 8
                     && possiblePosition.col > 0 && possiblePosition.col <= 8
                     && ((board.getPiece(possiblePosition) != null
                     && board.getPiece(possiblePosition).getTeamColor() == ChessGame.TeamColor.BLACK)
                     || board.getPiece(possiblePosition) == null));
         }
-        else if(team_color == ChessGame.TeamColor.BLACK){
+        else if(teamColor == ChessGame.TeamColor.BLACK){
             return (possiblePosition.row > 0 && possiblePosition.row <= 8
                     && possiblePosition.col > 0 && possiblePosition.col <= 8
                     && ((board.getPiece(possiblePosition) != null
@@ -106,13 +106,13 @@ public class ChessPiece {
             return false;
     }
 
-    public boolean isValidPawnMove(ChessPosition possiblePosition, ChessGame.TeamColor team_color, ChessBoard board){
-        if(team_color == ChessGame.TeamColor.WHITE){
+    public boolean isValidPawnMove(ChessPosition possiblePosition, ChessGame.TeamColor teamColor, ChessBoard board){
+        if(teamColor == ChessGame.TeamColor.WHITE){
             return (possiblePosition.row > 0 && possiblePosition.row <= 8
                     && possiblePosition.col > 0 && possiblePosition.col <= 8
                     && board.getPiece(possiblePosition) == null);
         }
-        else if(team_color == ChessGame.TeamColor.BLACK){
+        else if(teamColor == ChessGame.TeamColor.BLACK){
             return (possiblePosition.row > 0 && possiblePosition.row <= 8
                     && possiblePosition.col > 0 && possiblePosition.col <= 8
                     && board.getPiece(possiblePosition) == null);
@@ -398,10 +398,10 @@ public class ChessPiece {
     private boolean goodSideBlackMove(ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves, int c) {
         ChessPosition possPosit = new ChessPosition(pos.row, c);
         ChessPiece tempPiece = board.getPiece(possPosit);
-        return BlackSideMove(board, pos, possMoves, possPosit, tempPiece);
+        return blackSideMove(board, pos, possMoves, possPosit, tempPiece);
     }
 
-    private boolean BlackSideMove(ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves, ChessPosition possPosit, ChessPiece tempPiece) {
+    private boolean blackSideMove(ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves, ChessPosition possPosit, ChessPiece tempPiece) {
         if(tempPiece != null && tempPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
             possMoves.add(new ChessMove(pos, possPosit, null));
             return true;
@@ -417,7 +417,7 @@ public class ChessPiece {
     private boolean goodBlackMoveUpDown(ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves, int r) {
         ChessPosition possPosit = new ChessPosition(r, pos.col);
         ChessPiece tempPiece = board.getPiece(possPosit);
-        return BlackSideMove(board, pos, possMoves, possPosit, tempPiece);
+        return blackSideMove(board, pos, possMoves, possPosit, tempPiece);
     }
 
     private void whiteDiagMoves(ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves) {
