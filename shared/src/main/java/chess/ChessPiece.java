@@ -129,9 +129,7 @@ public class ChessPiece {
                 if(isValidPawnMove(possPosit, ChessGame.TeamColor.WHITE, board)){
                     possMoves.add(new ChessMove(pos, possPosit, null));
                     possPosit = new ChessPosition(pos.row + 2, pos.col);
-                    if(isValidPawnMove(possPosit, ChessGame.TeamColor.WHITE, board)){
-                        possMoves.add(new ChessMove(pos, possPosit, null));
-                    }
+                    addAndCheckPawnMove(ChessGame.TeamColor.WHITE, possPosit, board, pos, possMoves);
                 }
             }
             ChessPosition possPosit = new ChessPosition(pos.row + 1, pos.col);
@@ -140,9 +138,8 @@ public class ChessPiece {
 
             }
             else{
-                if(isValidPawnMove(possPosit, ChessGame.TeamColor.WHITE, board)) {
-                    possMoves.add(new ChessMove(pos, possPosit, null));
-                }
+                addAndCheckPawnMove(ChessGame.TeamColor.WHITE, possPosit, board, pos, possMoves);
+
             }
             if(pos.row + 1 <= 8 && pos.col - 1 > 0){
                 possPosit = new ChessPosition(pos.row + 1, pos.col - 1);
@@ -159,9 +156,8 @@ public class ChessPiece {
                 if(isValidPawnMove(possPosit, ChessGame.TeamColor.BLACK, board)){
                     possMoves.add(new ChessMove(pos, possPosit, null));
                     possPosit = new ChessPosition(pos.row - 2, pos.col);
-                    if(isValidPawnMove(possPosit, ChessGame.TeamColor.BLACK, board)){
-                        possMoves.add(new ChessMove(pos, possPosit, null));
-                    }
+                    addAndCheckPawnMove(ChessGame.TeamColor.BLACK, possPosit, board, pos, possMoves);
+
                 }
             }
             ChessPosition possPosit = new ChessPosition(pos.row - 1, pos.col);
@@ -170,9 +166,8 @@ public class ChessPiece {
 
             }
             else{
-                if(isValidPawnMove(possPosit, ChessGame.TeamColor.BLACK, board)) {
-                    possMoves.add(new ChessMove(pos, possPosit, null));
-                }
+                addAndCheckPawnMove(ChessGame.TeamColor.BLACK, possPosit, board, pos, possMoves);
+
             }
             if(pos.row - 1 > 0 && pos.col - 1 > 0){
                 possPosit = new ChessPosition(pos.row - 1, pos.col - 1);
@@ -492,6 +487,12 @@ public class ChessPiece {
 
     public void addAndCheckMove(ChessGame.TeamColor teamColor, ChessPosition possPosit, ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves){
         if(isValidMove(possPosit, teamColor, board)){
+            possMoves.add(new ChessMove(pos, possPosit, null));
+        }
+    }
+
+    public void addAndCheckPawnMove(ChessGame.TeamColor teamColor, ChessPosition possPosit, ChessBoard board, ChessPosition pos, Collection<ChessMove> possMoves){
+        if(isValidPawnMove(possPosit, teamColor, board)){
             possMoves.add(new ChessMove(pos, possPosit, null));
         }
     }
