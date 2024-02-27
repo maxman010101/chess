@@ -57,18 +57,10 @@ public class ChessGame {
                 ChessBoard copyBoard = makeDeepCopyOfBoard(gameBoard);
                 ChessPiece copyCurrentPiece = copyBoard.getPiece(move.startPosition);
                 if(copyCurrentPiece != null && !(isInCheck(copyCurrentPiece.getTeamColor()))){
-                    gameBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col), copyCurrentPiece);
-                    gameBoard.addPiece(new ChessPosition(move.startPosition.row, move.startPosition.col), null);
-                    if(!(isInCheck(copyCurrentPiece.getTeamColor()))){
-                        valid.add(move);
-                    }
+                    addValidMove(move, copyCurrentPiece, valid);
                 }
                 if(copyCurrentPiece != null && isInCheck(copyCurrentPiece.getTeamColor())){
-                    gameBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col), copyCurrentPiece);
-                    gameBoard.addPiece(new ChessPosition(move.startPosition.row, move.startPosition.col), null);
-                    if(!(isInCheck(copyCurrentPiece.getTeamColor()))){
-                        valid.add(move);
-                    }
+                    addValidMove(move, copyCurrentPiece, valid);
                 }
                 gameBoard = copyBoard;
             }
@@ -76,6 +68,14 @@ public class ChessGame {
         }
         else
             return null;
+    }
+
+    public void addValidMove(ChessMove move, ChessPiece copyCurrentPiece, Collection<ChessMove> valid){
+        gameBoard.addPiece(new ChessPosition(move.endPosition.row, move.endPosition.col), copyCurrentPiece);
+        gameBoard.addPiece(new ChessPosition(move.startPosition.row, move.startPosition.col), null);
+        if(!(isInCheck(copyCurrentPiece.getTeamColor()))){
+            valid.add(move);
+        }
     }
 
     public ChessBoard makeDeepCopyOfBoard(ChessBoard board){
