@@ -2,8 +2,6 @@ package handlers;
 
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
-import models.Auth;
-import requests.LogOutRequest;
 import responses.LogOutResponse;
 import responses.ResponseException;
 import services.UserServices;

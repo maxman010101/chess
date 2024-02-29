@@ -1,8 +1,6 @@
 package dataAccess;
 
 import models.Auth;
-import models.Game;
-import models.User;
 
 import java.util.ArrayList;
 import java.util.List;

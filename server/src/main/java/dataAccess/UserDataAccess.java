@@ -1,10 +1,6 @@
 package dataAccess;
 
-import chess.ChessGame;
-import models.Auth;
-import models.Game;
 import models.User;
-import java.util.List;
 
 
 public interface UserDataAccess {

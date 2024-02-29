@@ -1,11 +1,8 @@
 package handlers;
 
-import chess.ChessGame;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
-import requests.CreateGameRequest;
 import requests.JoinGameRequest;
-import responses.CreateGameResponse;
 import responses.JoinGameResponse;
 import responses.ResponseException;
 import services.GameServices;
