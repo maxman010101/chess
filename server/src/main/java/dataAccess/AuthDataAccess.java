@@ -6,9 +6,9 @@ import responses.ResponseException;
 public interface AuthDataAccess {
     void clearAuths() throws DataAccessException;
 
-    void removeAuth(String authToken) throws DataAccessException;
+    void removeAuth(String authToken) throws DataAccessException, ResponseException;
 
     Auth createAuth(String username, String authToken) throws DataAccessException, ResponseException;
-    Auth getAuth(String authToken) throws DataAccessException;
+    Auth getAuth(String authToken) throws DataAccessException, ResponseException;
 
 }

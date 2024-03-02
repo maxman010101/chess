@@ -29,8 +29,9 @@ public class SQLAuthDataAccess implements AuthDataAccess{
     }
 
     @Override
-    public void removeAuth(String authToken) throws DataAccessException {
-
+    public void removeAuth(String authToken) throws ResponseException {
+        var statement = "DELETE FROM auths WHERE token=?";
+        executeUpdate(statement, authToken);
     }
 
     @Override
@@ -41,10 +42,23 @@ public class SQLAuthDataAccess implements AuthDataAccess{
     }
 
     @Override
-    public Auth getAuth(String authToken) throws DataAccessException {
+    public Auth getAuth(String authToken) throws ResponseException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT id, json FROM auths WHERE token=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, authToken);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readAuth(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new ResponseException(String.format("Unable to read data: %s", e.getMessage()), 500);
+        }
         return null;
     }
-    private Auth readPet(ResultSet rs) throws SQLException {
+    private Auth readAuth(ResultSet rs) throws SQLException {
         var token = rs.getString("token");
         var username = rs.getString("username");
         return new Auth(token, username);
