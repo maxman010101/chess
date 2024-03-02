@@ -15,7 +15,14 @@ public class Game {
         this.whiteUsername = whiteUsername;
         this.blackUsername = blackUsername;
         this.game = game;
-        //this.gameID += 1;
+    }
+
+    public int getGameID() {
+        return gameID;
+    }
+
+    public void setGameID(int gameID) {
+        this.gameID = gameID;
     }
 
     @Override

@@ -9,7 +9,7 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 public class SQLUserDataAccess implements UserDataAccess{
     public SQLUserDataAccess() throws DataAccessException, ResponseException {
-        configureDatabase();
+        userConfigureDatabase();
     }
     @Override
     public void clearUsers() throws DataAccessException {
@@ -24,7 +24,7 @@ public class SQLUserDataAccess implements UserDataAccess{
     @Override
     public User getUser(String username) throws ResponseException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT id, json FROM users WHERE username = ?";
+            var statement = "SELECT username, password, email FROM users WHERE username = ?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, username);
                 try (var rs = ps.executeQuery()) {
@@ -40,13 +40,15 @@ public class SQLUserDataAccess implements UserDataAccess{
     }
     private User readUser(ResultSet rs) throws SQLException {
         var user = rs.getString("username");
-        return new Gson().fromJson(user, User.class);
+        var pass = rs.getString("password");
+        var email = rs.getString("email");
+        return new User(user, pass, email);
     }
 
     @Override
     public User checkLogin(String username, String password) throws ResponseException {
         // read the previously hashed password from the database
-        var hashedPassword = getUser(username).password;
+        var hashedPassword = hashUserPassword(password);
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         if(encoder.matches(password, hashedPassword)){
@@ -81,7 +83,7 @@ public class SQLUserDataAccess implements UserDataAccess{
     }
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS  pet (
+            CREATE TABLE IF NOT EXISTS  users (
               `userName` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
               `email` varchar(256) NOT NULL,
@@ -91,19 +93,10 @@ public class SQLUserDataAccess implements UserDataAccess{
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
-    private void configureDatabase() throws ResponseException, DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new ResponseException(String.format("Unable to configure database: %s", ex.getMessage()), 500);
-        }
+    private void userConfigureDatabase() throws ResponseException, DataAccessException {
+        SQLGameDataAccess.configDB(createStatements);
     }
-    String hashUserPassword(String password) throws DataAccessException {
+    String hashUserPassword(String password){
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         return encoder.encode(password);
     }
