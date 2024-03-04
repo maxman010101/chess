@@ -32,17 +32,12 @@ public class UserServices {
     public Auth login(String username, String password) throws ResponseException, DataAccessException {
         SQLUserDataAccess userDoa = new SQLUserDataAccess();
         SQLAuthDataAccess authDoa = new SQLAuthDataAccess();
-        try {
-            if(userDoa.checkLogin(username, password) != null) {
-                String authToken = UUID.randomUUID().toString();
-                return authDoa.createAuth(username, authToken);
-            }
-            else{
-                throw new ResponseException("Error: unauthorized", 401);
-            }
-        } catch (ResponseException e) {
-            e.printStackTrace();
-            throw new ResponseException("Error: cannot access DB", 500);
+        if(userDoa.checkLogin(username, password) != null) {
+            String authToken = UUID.randomUUID().toString();
+            return authDoa.createAuth(username, authToken);
+        }
+        else{
+            throw new ResponseException("Error: unauthorized", 401);
         }
     }
     public LogOutResponse logout(String authToken) throws DataAccessException, ResponseException {
