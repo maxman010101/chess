@@ -92,7 +92,7 @@ public class SQLAuthDataAccess implements AuthDataAccess{
               `token` varchar(256) NOT NULL,
               `userName` varchar(256) NOT NULL,
               PRIMARY KEY (`token`),
-              INDEX(name)
+              INDEX(userName)
             ) 
             """
     };
