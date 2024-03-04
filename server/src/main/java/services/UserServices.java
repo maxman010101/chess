@@ -11,9 +11,9 @@ public class UserServices {
     public UserServices() {
     }
 
-    public Auth register(String username, String password, String email) throws ResponseException {
-        MemoryUserDataAccess userDoa = new MemoryUserDataAccess();
-        MemoryAuthDataAccess authDoa = new MemoryAuthDataAccess();
+    public Auth register(String username, String password, String email) throws ResponseException, DataAccessException {
+        SQLUserDataAccess userDoa = new SQLUserDataAccess();
+        SQLAuthDataAccess authDoa = new SQLAuthDataAccess();
         if(username == null || password == null || email == null){throw new ResponseException("Error: bad request", 400);}
         try {
             if(userDoa.getUser(username) == null) {
@@ -29,9 +29,9 @@ public class UserServices {
         }
     }
 
-    public Auth login(String username, String password) throws ResponseException {
-        MemoryUserDataAccess userDoa = new MemoryUserDataAccess();
-        MemoryAuthDataAccess authDoa = new MemoryAuthDataAccess();
+    public Auth login(String username, String password) throws ResponseException, DataAccessException {
+        SQLUserDataAccess userDoa = new SQLUserDataAccess();
+        SQLAuthDataAccess authDoa = new SQLAuthDataAccess();
         try {
             if(userDoa.checkLogin(username, password) != null) {
                 String authToken = UUID.randomUUID().toString();
@@ -40,12 +40,13 @@ public class UserServices {
             else{
                 throw new ResponseException("Error: unauthorized", 401);
             }
-        } catch (DataAccessException e) {
+        } catch (ResponseException e) {
+            e.printStackTrace();
             throw new ResponseException("Error: cannot access DB", 500);
         }
     }
     public LogOutResponse logout(String authToken) throws DataAccessException, ResponseException {
-        MemoryAuthDataAccess authDoa = new MemoryAuthDataAccess();
+        SQLAuthDataAccess authDoa = new SQLAuthDataAccess();
         try{
             if(authDoa.getAuth(authToken) != null){
                 authDoa.removeAuth(authToken);
@@ -56,7 +57,7 @@ public class UserServices {
                 throw new ResponseException("Error: unauthorized", 401);
             }
         }
-        catch(DataAccessException e){
+        catch(ResponseException e){
             throw new ResponseException("Error: cannot access DB", 500);
         }
         }

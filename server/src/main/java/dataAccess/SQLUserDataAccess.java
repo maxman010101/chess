@@ -24,7 +24,7 @@ public class SQLUserDataAccess implements UserDataAccess{
     @Override
     public User getUser(String username) throws ResponseException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username, password, email FROM users WHERE username = ?";
+            var statement = "SELECT userName, password, email FROM users WHERE username = ?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, username);
                 try (var rs = ps.executeQuery()) {
@@ -34,12 +34,13 @@ public class SQLUserDataAccess implements UserDataAccess{
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             throw new ResponseException(String.format("Unable to read data: %s", e.getMessage()), 500);
         }
         return null;
     }
     private User readUser(ResultSet rs) throws SQLException {
-        var user = rs.getString("username");
+        var user = rs.getString("userName");
         var pass = rs.getString("password");
         var email = rs.getString("email");
         return new User(user, pass, email);
@@ -73,6 +74,7 @@ public class SQLUserDataAccess implements UserDataAccess{
                 return 0;
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new ResponseException(String.format("unable to update database: %s, %s", statement, e.getMessage()), 500);
         }
     }
@@ -90,7 +92,7 @@ public class SQLUserDataAccess implements UserDataAccess{
               PRIMARY KEY (`username`),
               INDEX(password),
               INDEX(email)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            ) 
             """
     };
     private void userConfigureDatabase() throws ResponseException, DataAccessException {

@@ -1,6 +1,7 @@
 package handlers;
 
 import com.google.gson.Gson;
+import dataAccess.DataAccessException;
 import models.Auth;
 import requests.LoginRequest;
 import responses.ResponseException;
@@ -12,7 +13,7 @@ public class LoginHandler {
     public LoginHandler() {
     }
 
-    public String handleRequest(Request req, Response res) throws ResponseException {
+    public String handleRequest(Request req, Response res) throws ResponseException, DataAccessException {
         var gson = new Gson();
         LoginRequest request = gson.fromJson(req.body(), LoginRequest.class);
 

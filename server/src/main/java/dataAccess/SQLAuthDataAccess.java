@@ -44,7 +44,7 @@ public class SQLAuthDataAccess implements AuthDataAccess{
     @Override
     public Auth getAuth(String authToken) throws ResponseException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT id, json FROM auths WHERE token=?";
+            var statement = "SELECT token, userName FROM auths WHERE token=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, authToken);
                 try (var rs = ps.executeQuery()) {
@@ -60,7 +60,7 @@ public class SQLAuthDataAccess implements AuthDataAccess{
     }
     private Auth readAuth(ResultSet rs) throws SQLException {
         var token = rs.getString("token");
-        var username = rs.getString("username");
+        var username = rs.getString("userName");
         return new Auth(token, username);
     }
 
@@ -89,16 +89,30 @@ public class SQLAuthDataAccess implements AuthDataAccess{
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  auths (
-              'token' varchar(256) NOT NULL,
-              `name` varchar(256) NOT NULL,
+              `token` varchar(256) NOT NULL,
+              `userName` varchar(256) NOT NULL,
               PRIMARY KEY (`token`),
               INDEX(name)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            ) 
             """
     };
 
 
     private void authConfigureDatabase() throws ResponseException, DataAccessException {
-        SQLGameDataAccess.confidDBHelper(createStatements);
+        configDB(createStatements);
+    }
+
+    static void configDB(String[] createStatements) throws DataAccessException, ResponseException {
+        DatabaseManager.createDatabase();
+        try (var conn = DatabaseManager.getConnection()) {
+            for (var statement : createStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new ResponseException(String.format("Unable to configure database: %s", ex.getMessage()), 500);
+        }
     }
 }
+

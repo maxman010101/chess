@@ -28,7 +28,7 @@ public class ServiceUnitTests {
 
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() throws ResponseException, DataAccessException {
         clearService = new ClearService();
         userServices = new UserServices();
         gameServices = new GameServices();
@@ -37,7 +37,7 @@ public class ServiceUnitTests {
         clearService.clearData();
     }
     @Test
-    public void registerSuccess() throws ResponseException {
+    public void registerSuccess() throws ResponseException, DataAccessException {
         String username = "newUsername";
         String password = "newPass";
         String email = "newEmail";

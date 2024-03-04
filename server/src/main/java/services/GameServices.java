@@ -1,9 +1,7 @@
 package services;
 
 import chess.ChessGame;
-import dataAccess.DataAccessException;
-import dataAccess.MemoryAuthDataAccess;
-import dataAccess.MemoryGameDataAccess;
+import dataAccess.*;
 import models.Game;
 import responses.*;
 
@@ -14,8 +12,8 @@ public class GameServices {
     }
 
     public CreateGameResponse createGame(String authToken, String gameName) throws DataAccessException, ResponseException{
-        MemoryGameDataAccess gameDoa = new MemoryGameDataAccess();
-        MemoryAuthDataAccess authDoa = new MemoryAuthDataAccess();
+        SQLGameDataAccess gameDoa = new SQLGameDataAccess();
+        SQLAuthDataAccess authDoa = new SQLAuthDataAccess();
 
         if(gameName == null){throw new ResponseException("Error: bad request", 400);}
         try{
@@ -32,9 +30,9 @@ public class GameServices {
         }
     }
 
-    public GameListResponse getGames(String authToken) throws DataAccessException, ResponseException {
-        MemoryGameDataAccess gameDoa = new MemoryGameDataAccess();
-        MemoryAuthDataAccess authDoa = new MemoryAuthDataAccess();
+    public GameListResponse getGames(String authToken) throws ResponseException, DataAccessException {
+        SQLGameDataAccess gameDoa = new SQLGameDataAccess();
+        SQLAuthDataAccess authDoa = new SQLAuthDataAccess();
         try{
             if(authDoa.getAuth(authToken) != null){
                 List<Game> games = gameDoa.listGames(authToken);
@@ -45,14 +43,14 @@ public class GameServices {
                 throw new ResponseException("Error: unauthorized", 401);
             }
         }
-        catch(DataAccessException e){
+        catch(ResponseException e){
             throw new ResponseException("Error: cannot access DB", 500);
         }
     }
 
-    public JoinGameResponse joinGame(String authToken, ChessGame.TeamColor playerColor, int gameID) throws ResponseException {
-        MemoryGameDataAccess gameDoa = new MemoryGameDataAccess();
-        MemoryAuthDataAccess authDoa = new MemoryAuthDataAccess();
+    public JoinGameResponse joinGame(String authToken, ChessGame.TeamColor playerColor, int gameID) throws ResponseException, DataAccessException {
+        SQLGameDataAccess gameDoa = new SQLGameDataAccess();
+        SQLAuthDataAccess authDoa = new SQLAuthDataAccess();
 
         if(gameID < 1){throw new ResponseException("Error: bad request", 400);}
         try{

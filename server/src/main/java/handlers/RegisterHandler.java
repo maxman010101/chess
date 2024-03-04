@@ -1,6 +1,7 @@
 package handlers;
 
 import com.google.gson.Gson;
+import dataAccess.DataAccessException;
 import models.Auth;
 import requests.RegisterRequest;
 import responses.ResponseException;
@@ -14,7 +15,7 @@ public class RegisterHandler {
     public RegisterHandler() {
     }
 
-    public String handleRequest(Request req, Response res) throws ResponseException {
+    public String handleRequest(Request req, Response res) throws ResponseException, DataAccessException {
         var gson = new Gson();
         RegisterRequest request = gson.fromJson(req.body(), RegisterRequest.class);
 

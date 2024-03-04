@@ -29,7 +29,7 @@ public class SQLGameDataAccess implements GameDataAccess{
     public List<Game> listGames(String authToken) throws ResponseException {
         var result = new ArrayList<Game>();
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT id, gameName, whiteUser, blackUser, game FROM games";
+            var statement = "SELECT gameID, gameName, whiteUser, blackUser, game FROM games";
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
                     while (rs.next()) {
@@ -43,7 +43,7 @@ public class SQLGameDataAccess implements GameDataAccess{
         return result;
     }
     private Game readGame(ResultSet rs) throws SQLException {
-        var id = rs.getInt("id");
+        var id = rs.getInt("gameID");
         var gameName = rs.getString("gameName");
         var whiteUser = rs.getString("whiteUser");
         var blackUser = rs.getString("blackUser");
@@ -62,7 +62,7 @@ public class SQLGameDataAccess implements GameDataAccess{
     @Override
     public Game getGame(int id) throws ResponseException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT id, gameName, whiteUser, blackUser, game FROM games WHERE id=?";
+            var statement = "SELECT gameID, gameName, whiteUser, blackUser, game FROM games WHERE gameID=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setInt(1, id);
                 try (var rs = ps.executeQuery()) {
@@ -78,7 +78,12 @@ public class SQLGameDataAccess implements GameDataAccess{
     }
     @Override
     public void saveGame(int gameID, ChessGame.TeamColor clientColor, String username) throws DataAccessException {
-
+        if(clientColor == ChessGame.TeamColor.BLACK){
+            var statement = "UPDATE games SET blackUser username";
+        }
+        if(clientColor == ChessGame.TeamColor.WHITE){
+            var statement = "UPDATE games SET whiteUser username";
+        }
     }
     @Override
     public boolean validColorToJoin(ChessGame.TeamColor color, ChessGame.TeamColor clientColor, String colorUsername) {
@@ -91,13 +96,9 @@ public class SQLGameDataAccess implements GameDataAccess{
               `gameName` varchar(256) NOT NULL,
               `whiteUser` varchar(256) DEFAULT NULL,
               `blackUser` varchar(256) DEFAULT NULL,
-              'game' TEXT NOT NULL,
-              PRIMARY KEY (`gameID`),
-              INDEX(gameName),
-              INDEX(whiteUser),
-              INDEX(blackUser),
-              INDEX(game)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+              `game` TEXT NOT NULL,
+              PRIMARY KEY (`gameID`)
+            )
             """
     };
     private void gameConfigureDatabase() throws ResponseException, DataAccessException {
@@ -109,16 +110,7 @@ public class SQLGameDataAccess implements GameDataAccess{
     }
 
     static void confidDBHelper(String[] createStatements) throws DataAccessException, ResponseException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new ResponseException(String.format("Unable to configure database: %s", ex.getMessage()), 500);
-        }
+        SQLAuthDataAccess.configDB(createStatements);
     }
 
     private int executeUpdate(String statement, Object... params) throws ResponseException {
