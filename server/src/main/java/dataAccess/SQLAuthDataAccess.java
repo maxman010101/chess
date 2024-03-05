@@ -1,15 +1,8 @@
 package dataAccess;
-
-import com.google.gson.Gson;
 import models.Auth;
-import models.User;
 import responses.ResponseException;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
@@ -20,7 +13,7 @@ public class SQLAuthDataAccess implements AuthDataAccess{
 
     @Override
     public void clearAuths() throws DataAccessException {
-        var statement = "TRUNCATE games";
+        var statement = "TRUNCATE auths";
         try {
             executeUpdate(statement);
         } catch (ResponseException e) {

@@ -37,7 +37,7 @@ public class SQLGameDataAccess implements GameDataAccess{
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (DataAccessException | SQLException e) {
             throw new ResponseException(String.format("Unable to read data: %s", e.getMessage()), 500);
         }
         return result;
@@ -77,14 +77,34 @@ public class SQLGameDataAccess implements GameDataAccess{
         return null;
     }
     @Override
-    public void saveGame(int gameID, ChessGame.TeamColor clientColor, String username) throws DataAccessException {
-        if(clientColor == ChessGame.TeamColor.BLACK){
-            var statement = "UPDATE games SET blackUser username";
+    public void saveGame(int gameID, ChessGame.TeamColor clientColor, String username) throws DataAccessException, ResponseException {
+        if (clientColor == ChessGame.TeamColor.BLACK) {
+            try (var conn = DatabaseManager.getConnection()) {
+                var statement = "UPDATE games SET blackUser = ? WHERE gameID = ?";
+                try (var ps = conn.prepareStatement(statement)) {
+                    ps.setString(1, username);
+                    ps.setInt(2, gameID);
+                    ps.executeUpdate();
+                }
+            }catch (Exception e) {
+                throw new ResponseException(String.format("Unable to read data: %s", e.getMessage()), 500);
+            }
         }
-        if(clientColor == ChessGame.TeamColor.WHITE){
-            var statement = "UPDATE games SET whiteUser username";
+
+        if (clientColor == ChessGame.TeamColor.WHITE) {
+            try (var conn = DatabaseManager.getConnection()) {
+                var statement = "UPDATE games SET whiteUser = ? WHERE gameID = ?";
+                try (var ps = conn.prepareStatement(statement)) {
+                    ps.setString(1, username);
+                    ps.setInt(2, gameID);
+                    ps.executeUpdate();
+                }
+            }catch (Exception e) {
+                throw new ResponseException(String.format("Unable to read data: %s", e.getMessage()), 500);
+            }
         }
     }
+
     @Override
     public boolean validColorToJoin(ChessGame.TeamColor color, ChessGame.TeamColor clientColor, String colorUsername) {
         return (clientColor == color && colorUsername == null);

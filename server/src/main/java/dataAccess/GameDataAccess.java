@@ -14,7 +14,7 @@ public interface GameDataAccess {
 
     Game getGame(int id) throws DataAccessException, ResponseException;
 
-    void saveGame(int gameID, ChessGame.TeamColor clientColor, String username) throws DataAccessException;
+    void saveGame(int gameID, ChessGame.TeamColor clientColor, String username) throws DataAccessException, ResponseException;
 
     boolean validColorToJoin(ChessGame.TeamColor color, ChessGame.TeamColor clientColor, String colorUsername);
 }

@@ -42,19 +42,14 @@ public class UserServices {
     }
     public LogOutResponse logout(String authToken) throws DataAccessException, ResponseException {
         SQLAuthDataAccess authDoa = new SQLAuthDataAccess();
-        try{
-            if(authDoa.getAuth(authToken) != null){
-                authDoa.removeAuth(authToken);
-                return new LogOutResponse(null);
-            }
+        if(authDoa.getAuth(authToken) != null){
+            authDoa.removeAuth(authToken);
+            return new LogOutResponse(null);
+        }
 
-            else{
-                throw new ResponseException("Error: unauthorized", 401);
-            }
+        else{
+            throw new ResponseException("Error: unauthorized", 401);
         }
-        catch(ResponseException e){
-            throw new ResponseException("Error: cannot access DB", 500);
-        }
-        }
+    }
     }
 

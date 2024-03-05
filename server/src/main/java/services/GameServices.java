@@ -33,18 +33,13 @@ public class GameServices {
     public GameListResponse getGames(String authToken) throws ResponseException, DataAccessException {
         SQLGameDataAccess gameDoa = new SQLGameDataAccess();
         SQLAuthDataAccess authDoa = new SQLAuthDataAccess();
-        try{
-            if(authDoa.getAuth(authToken) != null){
-                List<Game> games = gameDoa.listGames(authToken);
-                return new GameListResponse(games,null);
-            }
-
-            else{
-                throw new ResponseException("Error: unauthorized", 401);
-            }
+        if(authDoa.getAuth(authToken) != null){
+            List<Game> games = gameDoa.listGames(authToken);
+            return new GameListResponse(games,null);
         }
-        catch(ResponseException e){
-            throw new ResponseException("Error: cannot access DB", 500);
+
+        else{
+            throw new ResponseException("Error: unauthorized", 401);
         }
     }
 
