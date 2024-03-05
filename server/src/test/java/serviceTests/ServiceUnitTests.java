@@ -1,10 +1,7 @@
 package serviceTests;
 
 import chess.ChessGame;
-import dataAccess.DataAccessException;
-import dataAccess.MemoryAuthDataAccess;
-import dataAccess.MemoryGameDataAccess;
-import dataAccess.MemoryUserDataAccess;
+import dataAccess.*;
 import models.Auth;
 import models.Game;
 import org.junit.jupiter.api.Assertions;
@@ -57,7 +54,7 @@ public class ServiceUnitTests {
         //registering with an already existing username
 
         userServices.register(existingUsername, existingPassword, existingEmail);
-        MemoryUserDataAccess userDoa = new MemoryUserDataAccess();
+        SQLUserDataAccess userDoa = new SQLUserDataAccess();
         Assertions.assertNotNull(userDoa.getUser(secondUsername));
     }
     @Test
@@ -67,7 +64,7 @@ public class ServiceUnitTests {
         String email = "newEmail";
 
         userServices.register(username, password, email);
-        MemoryUserDataAccess userDoa = new MemoryUserDataAccess();
+        SQLUserDataAccess userDoa = new SQLUserDataAccess();
         Assertions.assertNotNull(userDoa.checkLogin(username, password));
     }
 
@@ -81,7 +78,7 @@ public class ServiceUnitTests {
         //logging in with wrong password
 
         userServices.register(username, registeredPassword, email);
-        MemoryUserDataAccess userDoa = new MemoryUserDataAccess();
+        SQLUserDataAccess userDoa = new SQLUserDataAccess();
         Assertions.assertNull(userDoa.checkLogin(username, wrongPassword));
     }
 
@@ -92,7 +89,7 @@ public class ServiceUnitTests {
         String email = "abc123@gmail.com";
 
         Auth user = userServices.register(username, password, email);
-        MemoryAuthDataAccess authDoa = new MemoryAuthDataAccess();
+        SQLAuthDataAccess authDoa = new SQLAuthDataAccess();
         userServices.login(username, password);
         String token = user.authToken;
         userServices.logout(token);
@@ -100,13 +97,13 @@ public class ServiceUnitTests {
     }
 
     @Test
-    public void logoutFail() throws DataAccessException {
+    public void logoutFail() throws DataAccessException, ResponseException {
 
         //failing a logout by not even logging in or registering first
 
         String authToken = "randomStringToken";
 
-        MemoryAuthDataAccess authDoa = new MemoryAuthDataAccess();
+        SQLAuthDataAccess authDoa = new SQLAuthDataAccess();
         Assertions.assertNull(authDoa.getAuth(authToken));
     }
 
@@ -135,7 +132,7 @@ public class ServiceUnitTests {
         Auth user = userServices.register(username, password, email);
         String token = user.authToken;
         userServices.logout(token);
-        MemoryAuthDataAccess authDoa = new MemoryAuthDataAccess();
+        SQLAuthDataAccess authDoa = new SQLAuthDataAccess();
         Assertions.assertNull(authDoa.getAuth(token));
     }
 
@@ -150,7 +147,7 @@ public class ServiceUnitTests {
         String gameName = "theGame";
 
 
-        MemoryGameDataAccess gameDoa = new MemoryGameDataAccess();
+        SQLGameDataAccess gameDoa = new SQLGameDataAccess();
         Auth user = userServices.register(username, password, email);
         String token = user.authToken;
         gameDoa.createGame(gameName);
@@ -171,7 +168,7 @@ public class ServiceUnitTests {
         Auth user = userServices.register(username, password, email);
         String token = user.authToken;
         userServices.logout(token);
-        MemoryAuthDataAccess authDoa = new MemoryAuthDataAccess();
+        SQLAuthDataAccess authDoa = new SQLAuthDataAccess();
         Assertions.assertNull(authDoa.getAuth(token));
     }
 
@@ -185,7 +182,7 @@ public class ServiceUnitTests {
         String email = "abc123@gmail.com";
         String gameName = "winning";
 
-        MemoryGameDataAccess gameDoa = new MemoryGameDataAccess();
+        SQLGameDataAccess gameDoa = new SQLGameDataAccess();
         Auth user = userServices.register(username, password, email);
         String token = user.authToken;
         CreateGameResponse gameID = gameServices.createGame(token, gameName);
@@ -206,7 +203,7 @@ public class ServiceUnitTests {
         String otherEmail = "joeJoe";
         String gameName = "winning";
 
-        MemoryGameDataAccess gameDoa = new MemoryGameDataAccess();
+        SQLGameDataAccess gameDoa = new SQLGameDataAccess();
         Auth user = userServices.register(username, password, email);
         String token = user.authToken;
         CreateGameResponse gameID = gameServices.createGame(token, gameName);
