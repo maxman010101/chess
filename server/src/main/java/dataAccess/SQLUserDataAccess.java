@@ -5,6 +5,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import responses.ResponseException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Objects;
+
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 public class SQLUserDataAccess implements UserDataAccess{
@@ -31,13 +33,15 @@ public class SQLUserDataAccess implements UserDataAccess{
                     if (rs.next()) {
                         return readUser(rs);
                     }
+                    else
+                        return null;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
             throw new ResponseException(String.format("Unable to read data: %s", e.getMessage()), 500);
         }
-        return null;
+        //return null;
     }
     private User readUser(ResultSet rs) throws SQLException {
         var user = rs.getString("userName");
@@ -48,15 +52,16 @@ public class SQLUserDataAccess implements UserDataAccess{
 
     @Override
     public User checkLogin(String username, String password) throws ResponseException {
-        // read the previously hashed password from the database
-        var hashedPassword = hashUserPassword(password);
-
+        // read the previously hashed password from the database and compare it to a given password when logging in
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        if(encoder.matches(password, hashedPassword)){
-            return getUser(username);
+        if(getUser(username) != null) {
+            String registeredUserName = getUser(username).username;
+            String registeredPassword = getUser(username).password;
+            if (encoder.matches(password, registeredPassword) && (Objects.equals(username, registeredUserName))) {
+                return getUser(username);
+            }
         }
-        else
-            return null;
+        return null;
     }
     private int executeUpdate(String statement, Object... params) throws ResponseException, DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
