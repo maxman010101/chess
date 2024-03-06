@@ -64,8 +64,7 @@ public class ServiceUnitTests {
         String email = "newEmail";
 
         userServices.register(username, password, email);
-        SQLUserDataAccess userDoa = new SQLUserDataAccess();
-        Assertions.assertNotNull(userDoa.checkLogin(username, password));
+        Assertions.assertNotNull(userServices.login(username, password));
     }
 
     @Test
