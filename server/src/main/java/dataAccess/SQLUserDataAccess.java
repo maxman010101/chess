@@ -38,7 +38,6 @@ public class SQLUserDataAccess implements UserDataAccess{
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
             throw new ResponseException(String.format("Unable to read data: %s", e.getMessage()), 500);
         }
         //return null;
@@ -79,7 +78,6 @@ public class SQLUserDataAccess implements UserDataAccess{
                 return 0;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new ResponseException(String.format("unable to update database: %s, %s", statement, e.getMessage()), 500);
         }
     }
