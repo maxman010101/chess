@@ -1,8 +1,12 @@
 package dataAccessTests;
 
+import chess.ChessGame;
 import dataAccess.DataAccessException;
+import dataAccess.SQLAuthDataAccess;
+import dataAccess.SQLGameDataAccess;
 import dataAccess.SQLUserDataAccess;
 import models.Auth;
+import models.Game;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,23 +15,19 @@ import services.ClearService;
 import services.GameServices;
 import services.UserServices;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 public class dataAccessTests {
     private ClearService clearService;
     private UserServices userServices;
     private GameServices gameServices;
-    private List<String> expected;
-    private List<String> actual;
-
     @BeforeEach
     public void setUp() throws ResponseException, DataAccessException {
         clearService = new ClearService();
         userServices = new UserServices();
         gameServices = new GameServices();
-        expected = new ArrayList<>();
-        actual = new ArrayList<>();
         clearService.clearData();
     }
     //tests that check functionality of both createUser and getUser since they are connected in registering a User
@@ -94,8 +94,164 @@ public class dataAccessTests {
         Assertions.assertNull(userDao.getUser(nonExistingUsername));
     }
     @Test
-    public void removingExistingAuthToken(){
-        
+    public void createAGoodAuth() throws ResponseException, DataAccessException {
+        SQLAuthDataAccess authDao = new SQLAuthDataAccess();
+        String userName = "Maxman";
+        String randomToken = "abc123";
+        String token = authDao.createAuth(userName, randomToken).authToken;
+        Assertions.assertEquals(randomToken, token);
+    }
+    @Test
+    public void createAuthWithFakeToken() throws ResponseException, DataAccessException {
+        //trying to create an Auth without an existing user or authToken
+        SQLAuthDataAccess authDao = new SQLAuthDataAccess();
+        boolean thrown = false;
+        try {
+            authDao.createAuth(null, null);
+        } catch (ResponseException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+    }
+    @Test
+    public void removingExistingAuthToken() throws ResponseException, DataAccessException {
+        //testing the remove auth method as part of logging out
+        SQLAuthDataAccess authDao = new SQLAuthDataAccess();
+        String username = "newUsername";
+        String password = "newPass";
+        String email = "newEmail";
+        Auth user = userServices.register(username,password,email);
+        String token = user.authToken;
+        authDao.removeAuth(token);
+        Assertions.assertNull(authDao.getAuth(token));
+    }
+    @Test
+    public void removingNonExistingAuthtoken() throws ResponseException, DataAccessException {
+        //trying to remove the wrong auth (aka logging out as one user when trying to log out as another),
+        // and making sure the method removed the given token and not more or all of them from table
+        String firstUser = "max";
+        String randomAuthtoken = "abc123xyz890";
+        String otherUser = "Bob";
+        String otherAuthtoken = "asdfghjkl102938";
+        SQLAuthDataAccess authDao = new SQLAuthDataAccess();
+        authDao.createAuth(firstUser, randomAuthtoken);
+        authDao.createAuth(otherUser,otherAuthtoken);
+        authDao.removeAuth(randomAuthtoken);
+        Assertions.assertNotNull(authDao.getAuth(otherAuthtoken));
+    }
+    @Test
+    public void getARealAuth() throws ResponseException, DataAccessException {
+        SQLAuthDataAccess authDao = new SQLAuthDataAccess();
+        String username = "newUsername";
+        String password = "newPass";
+        String email = "newEmail";
+        Auth user = userServices.register(username,password,email);
+        String token = user.authToken;
+        Assertions.assertNotNull(authDao.getAuth(token));
+    }
+    @Test
+    public void getUnrealAuth() throws ResponseException, DataAccessException {
+        SQLAuthDataAccess authDao = new SQLAuthDataAccess();
+        String fakeToken = "randomStuff";
+        Assertions.assertNull(authDao.getAuth(fakeToken));
+    }
+    @Test
+    public void createGoodGame() throws ResponseException, DataAccessException {
+        //testing to see if the expected ID of the created game matched what the method returns
+        SQLGameDataAccess gameDao = new SQLGameDataAccess();
+        String gameName = "Maxman";
+        Assertions.assertEquals(1, gameDao.createGame(gameName));
+    }
+    @Test
+    public void createGameWithoutName() throws ResponseException, DataAccessException {
+    //trying to make a game without giving it a name
+        SQLGameDataAccess gameDao = new SQLGameDataAccess();
+        boolean thrown = false;
+        try {
+            gameDao.createGame(null);
+        } catch (ResponseException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
+    }
+    @Test
+    public void getAGame() throws ResponseException, DataAccessException {
+        SQLGameDataAccess gameDao = new SQLGameDataAccess();
+        String gameName = "Maxman";
+        int gameID = gameDao.createGame(gameName);
+        Assertions.assertNotNull(gameDao.getGame(gameID));
+    }
+    @Test
+    public void getAGameWithoutRealID() throws ResponseException, DataAccessException {
+        SQLGameDataAccess gameDao = new SQLGameDataAccess();
+        Assertions.assertNull(gameDao.getGame(20));
+    }
+    @Test
+    public void listOneGame() throws ResponseException, DataAccessException {
+        SQLGameDataAccess gameDao = new SQLGameDataAccess();
+        String username = "newUsername";
+        String password = "newPass";
+        String email = "newEmail";
+        String gameName = "Maxman";
+        Auth user = userServices.register(username, password, email);
+        String token = user.authToken;
+        gameDao.createGame(gameName);
+        List<Game> games = gameDao.listGames(token);
+        String createdName = games.getFirst().gameName;
+        Assertions.assertEquals(gameName, createdName);
+    }
+    @Test
+    public void listGamesWhenNoGamesExist() throws ResponseException, DataAccessException {
+        SQLGameDataAccess gameDao = new SQLGameDataAccess();
+        String username = "newUsername";
+        String password = "newPass";
+        String email = "newEmail";
+        Auth user = userServices.register(username, password, email);
+        String token = user.authToken;
+        assertTrue((gameDao.listGames(token).isEmpty()));
+    }
+    @Test
+    public void colorIsValid() throws ResponseException, DataAccessException {
+        SQLGameDataAccess gameDao = new SQLGameDataAccess();
+        String gameName = "Maxman";
+        int gameID = gameDao.createGame(gameName);
+        String whiteUser = gameDao.getGame(gameID).whiteUsername;
+        Assertions.assertTrue(gameDao.validColorToJoin(ChessGame.TeamColor.WHITE, ChessGame.TeamColor.WHITE, whiteUser));
+    }
+    @Test
+    public void colorNotValid() throws ResponseException, DataAccessException {
+        //color isn't open to use as your team
+        SQLGameDataAccess gameDao = new SQLGameDataAccess();
+        String existingUsername = "Max";
+        String gameName = "Maxman";
+        int gameID = gameDao.createGame(gameName);
+        gameDao.saveGame(gameID, ChessGame.TeamColor.WHITE, existingUsername);
+        String whiteUser = gameDao.getGame(gameID).whiteUsername;
+        Assertions.assertFalse(gameDao.validColorToJoin(ChessGame.TeamColor.WHITE, ChessGame.TeamColor.WHITE, whiteUser));
+    }
+    @Test
+    public void gameIsSaved() throws ResponseException, DataAccessException {
+        SQLGameDataAccess gameDao = new SQLGameDataAccess();
+        String existingUsername = "Max";
+        String gameName = "Maxman";
+        int gameID = gameDao.createGame(gameName);
+        gameDao.saveGame(gameID, ChessGame.TeamColor.WHITE, existingUsername);
+        String whiteUser = gameDao.getGame(gameID).whiteUsername;
+        Assertions.assertEquals(existingUsername, whiteUser);
+    }
+    @Test
+    public void gameSavedWithBadID() throws ResponseException, DataAccessException {
+        //trying to save a game without having a username to add to the game
+        SQLGameDataAccess gameDao = new SQLGameDataAccess();
+        String gameName = "Maxman";
+        gameDao.createGame(gameName);
+        boolean thrown = false;
+        try {
+            gameDao.saveGame(0, ChessGame.TeamColor.WHITE, "max");
+        } catch (ResponseException e) {
+            thrown = true;
+        }
+        assertTrue(thrown);
     }
     @Test
     public void clearAllDataSuccess() throws ResponseException, DataAccessException {

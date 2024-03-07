@@ -78,6 +78,7 @@ public class SQLGameDataAccess implements GameDataAccess{
     }
     @Override
     public void saveGame(int gameID, ChessGame.TeamColor clientColor, String username) throws DataAccessException, ResponseException {
+        if(gameID <= 0){throw new ResponseException("Error: bad request", 400);}
         if (clientColor == ChessGame.TeamColor.BLACK) {
             try (var conn = DatabaseManager.getConnection()) {
                 var statement = "UPDATE games SET blackUser = ? WHERE gameID = ?";
