@@ -24,7 +24,6 @@ public class Server {
 
 
         Spark.exception(ResponseException.class, (e, request, response) -> {
-            e.printStackTrace();
             response.status(e.getStatCode());
             response.body("{\"message\": \""+e.getMessage()+"\"}");
         });
