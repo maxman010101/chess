@@ -1,6 +1,8 @@
 package ui;
 
 import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessPiece;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -10,6 +12,7 @@ import static ui.EscapeSequences.*;
 
 public class ChessBoardUI {
     private static final int BOARD_SIZE_IN_SQUARES = 8;
+    private static int rowNumber;
     private static final int SQUARE_SIZE_IN_CHARS = 3;
     private static final int LINE_WIDTH_IN_CHARS = 1;
     private static final String EMPTY = "   ";
@@ -19,7 +22,12 @@ public class ChessBoardUI {
     private static final String N = " N ";
     private static final String B = " B ";
     private static final String P = " P ";
-    private ChessBoard gameBoard = new ChessBoard();
+    private static ChessBoard gameBoard = new ChessBoard();
+
+    public ChessBoardUI() { //fix this for phase 6 so it updates the played game
+        gameBoard.resetBoard();
+    }
+
     public static void main(String[] args) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
@@ -28,6 +36,7 @@ public class ChessBoardUI {
         drawHeaders(out);
 
         drawChessBoard(out);
+        drawHeaders(out);
 
         out.print(SET_BG_COLOR_BLACK);
         out.print(SET_TEXT_COLOR_WHITE);
@@ -35,7 +44,7 @@ public class ChessBoardUI {
     private static void drawHeaders(PrintStream out) {
         setBlack(out);
 
-        String[] headers = { " a ", " b ", " c ", " d ", " e ", " f ", " g ", " h " };
+        String[] headers = { "    a ", " b ", " c ", " d ", " e ", " f ", " g ", " h " };
         for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
             drawHeader(out, headers[boardCol]);
 
@@ -54,11 +63,11 @@ public class ChessBoardUI {
         printHeaderText(out, headerText);
         out.print(EMPTY.repeat(suffixLength));
     }
-    private static void printHeaderText(PrintStream out, String player) {
+    private static void printHeaderText(PrintStream out, String piece) {
         out.print(SET_BG_COLOR_BLACK);
         out.print(SET_TEXT_COLOR_GREEN);
 
-        out.print(player);
+        out.print(piece);
 
         setBlack(out);
     }
@@ -67,11 +76,12 @@ public class ChessBoardUI {
         out.print(SET_TEXT_COLOR_BLACK);
     }
     private static void drawChessBoard(PrintStream out) {
-
+        setBlack(out);
+        String[] rowNumbs = { " 8 ", " 7 ", " 6 ", " 5 ", " 4 ", " 3 ", " 2 ", " 1 " };
         for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
-
+            rowNumber = boardRow;
             drawRowOfSquares(out);
-
+            printHeaderText(out, rowNumbs[boardRow]);
             if (boardRow < BOARD_SIZE_IN_SQUARES - 1) {
                 drawVerticalLine(out);
                 setBlack(out);
@@ -79,19 +89,80 @@ public class ChessBoardUI {
         }
     }
     private static void drawRowOfSquares(PrintStream out) {
-
+        gameBoard.resetBoard();
         for (int squareRow = 0; squareRow < SQUARE_SIZE_IN_CHARS; ++squareRow) {
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
                 setWhite(out);
-
                 if (squareRow == SQUARE_SIZE_IN_CHARS / 2) {
                     int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
                     int suffixLength = SQUARE_SIZE_IN_CHARS - prefixLength - 1;
-
+                    ChessPiece piece = gameBoard.pieces[rowNumber][boardCol];
+                    //out.println(piece);
+                    if(piece != null && piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == ChessGame.TeamColor.WHITE){
                     out.print(EMPTY.repeat(prefixLength));
                     printWhitePiece(out, K);
-                    printBlackPiece(out, K);
                     out.print(EMPTY.repeat(suffixLength));
+                    }
+                    if(piece != null && piece.getPieceType() == ChessPiece.PieceType.QUEEN && piece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                        out.print(EMPTY.repeat(prefixLength));
+                        printWhitePiece(out, Q);
+                        out.print(EMPTY.repeat(suffixLength));
+                    }
+                    if(piece != null && piece.getPieceType() == ChessPiece.PieceType.PAWN && piece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                        out.print(EMPTY.repeat(prefixLength));
+                        printWhitePiece(out, P);
+                        out.print(EMPTY.repeat(suffixLength));
+                    }
+                    if(piece != null && piece.getPieceType() == ChessPiece.PieceType.ROOK && piece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                        out.print(EMPTY.repeat(prefixLength));
+                        printWhitePiece(out, R);
+                        out.print(EMPTY.repeat(suffixLength));
+                    }
+                    if(piece != null && piece.getPieceType() == ChessPiece.PieceType.BISHOP && piece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                        out.print(EMPTY.repeat(prefixLength));
+                        printWhitePiece(out, B);
+                        out.print(EMPTY.repeat(suffixLength));
+                    }
+                    if(piece != null && piece.getPieceType() == ChessPiece.PieceType.KNIGHT && piece.getTeamColor() == ChessGame.TeamColor.WHITE){
+                        out.print(EMPTY.repeat(prefixLength));
+                        printWhitePiece(out, N);
+                        out.print(EMPTY.repeat(suffixLength));
+                    }
+                    if(piece != null && piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == ChessGame.TeamColor.BLACK){
+                        out.print(EMPTY.repeat(prefixLength));
+                        printBlackPiece(out, K);
+                        out.print(EMPTY.repeat(suffixLength));
+                    }
+                    if(piece != null && piece.getPieceType() == ChessPiece.PieceType.QUEEN && piece.getTeamColor() == ChessGame.TeamColor.BLACK){
+                        out.print(EMPTY.repeat(prefixLength));
+                        printBlackPiece(out, Q);
+                        out.print(EMPTY.repeat(suffixLength));
+                    }
+                    if(piece != null && piece.getPieceType() == ChessPiece.PieceType.PAWN && piece.getTeamColor() == ChessGame.TeamColor.BLACK){
+                        out.print(EMPTY.repeat(prefixLength));
+                        printBlackPiece(out, P);
+                        out.print(EMPTY.repeat(suffixLength));
+                    }
+                    if(piece != null && piece.getPieceType() == ChessPiece.PieceType.ROOK && piece.getTeamColor() == ChessGame.TeamColor.BLACK){
+                        out.print(EMPTY.repeat(prefixLength));
+                        printBlackPiece(out, R);
+                        out.print(EMPTY.repeat(suffixLength));
+                    }
+                    if(piece != null && piece.getPieceType() == ChessPiece.PieceType.BISHOP && piece.getTeamColor() == ChessGame.TeamColor.BLACK){
+                        out.print(EMPTY.repeat(prefixLength));
+                        printBlackPiece(out, B);
+                        out.print(EMPTY.repeat(suffixLength));
+                    }
+                    if(piece != null && piece.getPieceType() == ChessPiece.PieceType.KNIGHT && piece.getTeamColor() == ChessGame.TeamColor.BLACK){
+                        out.print(EMPTY.repeat(prefixLength));
+                        printBlackPiece(out, N);
+                        out.print(EMPTY.repeat(suffixLength));
+                    }
+                    if(piece == null){
+                        out.print(EMPTY.repeat(prefixLength));
+                        out.print(EMPTY.repeat(prefixLength));
+                        out.print(EMPTY.repeat(suffixLength));
+                    }
                 }
                 else {
                     out.print(EMPTY.repeat(SQUARE_SIZE_IN_CHARS));
