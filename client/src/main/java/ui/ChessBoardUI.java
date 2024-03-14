@@ -6,7 +6,6 @@ import chess.ChessPiece;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Random;
 
 import static ui.EscapeSequences.*;
 
@@ -23,6 +22,7 @@ public class ChessBoardUI {
     private static final String B = " B ";
     private static final String P = " P ";
     private static ChessBoard gameBoard = new ChessBoard();
+
     public ChessBoardUI() { //fix this for phase 6, so it uses a playable board rather than an initial board
         gameBoard.resetBoard();
     }
