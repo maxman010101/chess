@@ -24,17 +24,25 @@ public class ChessClientMenu {
             return switch (cmd) {
                 case "login" -> logIn(params);
                 case "register" -> register(params);
-                case "list Games" -> listGames();
+                case "listGames" -> listGames();
                 case "logout" -> logOut();
-                //case "Create Game" -> createGame(params);
-              //  case "Join Game" -> joinGame(params);
-              //  case "Join Game as Observer" -> joinObserver(params);
+                case "createGame" -> createGame(params);
+              //  case "joinGame" -> joinGame(params);
+              //  case "joinGameAsObserver" -> joinGame(params);
                 case "quit" -> exit();
                 default -> help();
             };
         } catch (ResponseException ex) {
             return ex.getMessage();
         }
+    }
+    public String createGame(String...params) throws ResponseException {
+        assertSignedIn();
+        if (params.length >= 1) {
+            //server.createGame();
+            System.out.print("successfully made the game and added it to your list, press enter");
+        }
+        throw new ResponseException("Expected: <gameName>", 400);
     }
     public String exit(){
         System.out.print("exiting chess");
@@ -45,7 +53,6 @@ public class ChessClientMenu {
         if (params.length >= 1) {
             state = State.SIGNEDIN;
             //server.register();
-            //user = String.join("-", params);
             System.out.print("successfully registered, press enter");
         }
         throw new ResponseException("Expected: <yourname, password, email>", 400);
@@ -54,7 +61,6 @@ public class ChessClientMenu {
         if (params.length >= 1) {
             state = State.SIGNEDIN;
             //server.logIn();
-            //user = String.join("-", params);
             System.out.print("logged in, press enter");
         }
         throw new ResponseException("Expected: <yourname, password>", 400);
@@ -89,10 +95,10 @@ public class ChessClientMenu {
         System.out.print( """
                 \n- help
                 - logout
-                - create Game <name>
-                - list Games
-                - join game <id, color>
-                - join as Observer <id>
+                - createGame <gameName>
+                - listGames
+                - joinGame <id, color>
+                - joinAsObserver <id>
                 """);
         }
         return "";

@@ -29,12 +29,12 @@ public class ChessBoardUI {
     public static void main(String[] args) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         out.print(ERASE_SCREEN);
-        drawHeaders(out);
-        drawChessBoard(out);
-        out.print(SET_BG_COLOR_BLACK);
-        out.print(SET_TEXT_COLOR_WHITE);
+        drawHeaders(out, "white");
+        drawChessBoard(out, "white");
+        drawHeaders(out, "black");
+        drawChessBoard(out, "black");
     }
-    private static void drawHeaders(PrintStream out) {
+    private static void drawHeaders(PrintStream out, String color) {
         setBlack(out);
         String[] headers = { " a ", " b ", " c ", " d ", " e ", " f ", " g ", " h " };
         for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
@@ -62,7 +62,7 @@ public class ChessBoardUI {
         out.print(SET_BG_COLOR_BLACK);
         out.print(SET_TEXT_COLOR_BLACK);
     }
-    private static void drawChessBoard(PrintStream out) {
+    private static void drawChessBoard(PrintStream out, String color) {
         for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
             rowNumber = boardRow;
             drawRowOfSquares(out);
