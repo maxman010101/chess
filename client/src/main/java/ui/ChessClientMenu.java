@@ -20,30 +20,33 @@ public class ChessClientMenu {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-            System.out.print("Login: enter 'Login' with your username and password to log in as an existing user\n" +
-                    "Register: enter Register with your username, password, and email to create a new user\nquit: enter 'quit' to exit chess\n" +
-                    "Help: enter 'help' to see list of possible commands\n");
+            System.out.print("[" + state + "]>>>");
             return switch (cmd) {
                 case "login" -> logIn(params);
-                case "Register" -> register(params);
+                case "register" -> register(params);
                 case "list Games" -> listGames();
-                case "Logout" -> logOut();
+                case "logout" -> logOut();
                 //case "Create Game" -> createGame(params);
               //  case "Join Game" -> joinGame(params);
               //  case "Join Game as Observer" -> joinObserver(params);
-                case "quit" -> "quit";
+                case "quit" -> exit();
                 default -> help();
             };
         } catch (ResponseException ex) {
             return ex.getMessage();
         }
     }
+    public String exit(){
+        System.out.print("exiting chess");
+        System.exit(0);
+        return "";
+    }
     public String register(String... params) throws ResponseException{
         if (params.length >= 1) {
             state = State.SIGNEDIN;
             //server.register();
             //user = String.join("-", params);
-            return "";
+            System.out.print("successfully registered, press enter");
         }
         throw new ResponseException("Expected: <yourname, password, email>", 400);
     }
@@ -52,7 +55,7 @@ public class ChessClientMenu {
             state = State.SIGNEDIN;
             //server.logIn();
             //user = String.join("-", params);
-            return "";
+            System.out.print("logged in, press enter");
         }
         throw new ResponseException("Expected: <yourname, password>", 400);
     }
@@ -70,25 +73,29 @@ public class ChessClientMenu {
         assertSignedIn();
         state = State.SIGNEDOUT;
         //server.logOut();
+        System.out.print("logged out, press enter");
         return "";
     }
     public String help() {
         if (state == State.SIGNEDOUT) {
-            return """
-                    - Register <username, password, email>
-                    - Help
-                    - Login <username, password>
-                    - Quit
-                    """;
+            System.out.print("""
+                    \n- register <username, password, email>
+                    - help
+                    - login <username, password>
+                    - quit
+                    """);
         }
-        return """
-                - Help
-                - Logout
-                - Create Game <name>
-                - List Games
-                - Join game <id, color>
-                - Join as Observer <id>
-                """;
+        else {
+        System.out.print( """
+                \n- help
+                - logout
+                - create Game <name>
+                - list Games
+                - join game <id, color>
+                - join as Observer <id>
+                """);
+        }
+        return "";
     }
     private void assertSignedIn() throws ResponseException {
         if (state == State.SIGNEDOUT) {
