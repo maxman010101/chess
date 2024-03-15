@@ -24,9 +24,9 @@ public class ChessClientMenu {
             return switch (cmd) {
                 case "login" -> logIn(params);
                 case "register" -> register(params);
-                case "listGames" -> listGames();
+                case "listgames" -> listGames();
                 case "logout" -> logOut();
-                case "createGame" -> createGame(params);
+                case "creategame" -> createGame(params);
               //  case "joinGame" -> joinGame(params);
               //  case "joinGameAsObserver" -> joinGame(params);
                 case "quit" -> exit();
@@ -36,13 +36,17 @@ public class ChessClientMenu {
             return ex.getMessage();
         }
     }
-    public String createGame(String...params) throws ResponseException {
+    public String createGame(String... params) throws ResponseException {
         assertSignedIn();
         if (params.length >= 1) {
             //server.createGame();
             System.out.print("successfully made the game and added it to your list, press enter");
         }
-        throw new ResponseException("Expected: <gameName>", 400);
+        else{
+            System.out.print("please enter a name for your game");
+            throw new ResponseException("Expected: <gameName>", 400);
+        }
+        return "";
     }
     public String exit(){
         System.out.print("exiting chess");
@@ -55,15 +59,23 @@ public class ChessClientMenu {
             //server.register();
             System.out.print("successfully registered, press enter");
         }
-        throw new ResponseException("Expected: <yourname, password, email>", 400);
+        else{
+            System.out.print("please enter your username, password, and email");
+            throw new ResponseException("Expected: <yourname, password, email>", 400);
+        }
+        return "";
     }
     public String logIn(String... params) throws ResponseException {
-        if (params.length >= 1) {
+        if (params.length >= 2) {
             state = State.SIGNEDIN;
             //server.logIn();
             System.out.print("logged in, press enter");
         }
-        throw new ResponseException("Expected: <yourname, password>", 400);
+        else{
+            System.out.print("please enter in your username and password");
+            throw new ResponseException("Expected: <yourname, password>", 400);
+        }
+        return "";
     }
     public String listGames() throws ResponseException {
         assertSignedIn();
@@ -97,8 +109,8 @@ public class ChessClientMenu {
                 - logout
                 - createGame <gameName>
                 - listGames
-                - joinGame <id, color>
-                - joinAsObserver <id>
+                - joinGame <gameID, color>
+                - joinAsObserver <gameID>
                 """);
         }
         return "";
