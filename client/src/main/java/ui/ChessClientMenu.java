@@ -40,13 +40,9 @@ public class ChessClientMenu {
             return ex.getMessage();
         }
     }
-    private Game getGame(int id) throws ResponseException {
-        for (var game : server.listGames().games()) {
-            if(game.getGameID() == id) {
-                return game;
-            }
-        }
-        return null;
+    private Game getGame(int id) throws ResponseException, responses.ResponseException, DataAccessException {
+        var games = server.listGames().games();
+        return games.get(id);
     }
     public String joinGame(String... params) throws ResponseException, responses.ResponseException, DataAccessException {
         assertSignedIn();
@@ -58,7 +54,7 @@ public class ChessClientMenu {
                 if(Objects.equals(playerColorString, "black")){color = ChessGame.TeamColor.BLACK;}
                 var game = getGame(gameID);
                 if (game != null) {
-                    server.joinGame(gameID, color);
+                    server.joinGame(game.gameID, color, game, game.gameName);
                     ChessBoardUI.drawBoard();
                 }
                 else{
@@ -89,21 +85,25 @@ public class ChessClientMenu {
     }
     public String register(String... params) throws ResponseException, responses.ResponseException, DataAccessException {
         if (params.length >= 1) {
-            server.register(params[0], params[1], params[2]);
-            state = State.SIGNEDIN;
-            System.out.print("successfully registered, press enter");
+            var response = server.register(params[0], params[1], params[2]);
+            if(response.authToken != null){
+                state = State.SIGNEDIN;
+                System.out.print("successfully registered, press enter");
+            }
         }
         else{
-            System.out.print("please enter your username, password, and email");
+            System.out.print("please enter a new username, password, and email");
             throw new ResponseException("Expected: <yourname, password, email>", 400);
         }
         return "";
     }
     public String logIn(String... params) throws ResponseException, responses.ResponseException, DataAccessException {
         if (params.length >= 2) {
-            server.login(params[0], params[1]);
-            state = State.SIGNEDIN;
-            System.out.print("logged in, press enter");
+            var response = server.login(params[0], params[1]);
+            if(response.authToken != null){
+                state = State.SIGNEDIN;
+                System.out.print("successfully logged in, press enter");
+            }
         }
         else{
             System.out.print("please enter in your username and password");
@@ -111,16 +111,16 @@ public class ChessClientMenu {
         }
         return "";
     }
-    public String listGames() throws ResponseException {
+    public String listGames() throws ResponseException, responses.ResponseException, DataAccessException {
         assertSignedIn();
         int gameNumb = 1;
         var games = server.listGames().games();
         var result = new StringBuilder();
         var gson = new Gson();
         for (var game : games){
-            game.setGameID(gameNumb);
+            //game.setGameID(gameNumb);
             result.append(gson.toJson(game)).append('\n');
-            System.out.print("gameNumb = " + gameNumb + " " + game);
+            System.out.print(gameNumb + " " + game);
             gameNumb++;}
         return result.toString();
     }

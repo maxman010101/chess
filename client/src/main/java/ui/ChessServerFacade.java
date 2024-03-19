@@ -2,15 +2,10 @@ package ui;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import dataAccess.DataAccessException;
 import models.Auth;
 import models.Game;
-import requests.*;
+import models.User;
 import responses.*;
-import services.ClearService;
-import services.GameServices;
-import services.UserServices;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -18,14 +13,10 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.io.InputStream;
-
 public class ChessServerFacade {
     private final String serverUrl;
     private String authToken;
-    private UserServices userServices = new UserServices();
-    private GameServices gameServices = new GameServices();
-    private ClearService clearServices = new ClearService();
-
+    private String username;
     public ChessServerFacade(String serverUrl) {
         this.serverUrl = serverUrl;
     }
@@ -33,33 +24,44 @@ public class ChessServerFacade {
         var path = "/game";
         return this.makeRequest("GET", path, null, GameListResponse.class);
     }
-    public RegisterResponse register(String name, String pass, String email) throws ResponseException, responses.ResponseException, DataAccessException {
+    public Auth register(String name, String pass, String email) throws ResponseException {
         var path = "/user";
-        var response = this.makeRequest("POST", path, userServices.register(name, pass, email), RegisterResponse.class);
-        authToken = response.auth().authToken;
+        var response = this.makeRequest("POST", path, new User(name, pass, email), Auth.class);
+        authToken = response.authToken;
+        username = response.username;
         return response;
     }
-    public LoginResponse login(String name, String pass) throws ResponseException, responses.ResponseException, DataAccessException {
+    public Auth login(String name, String pass) throws ResponseException {
         var path = "/session";
-        var response = this.makeRequest("POST", path, userServices.login(name, pass), LoginResponse.class);
-        authToken = response.auth().authToken;
+        var response = this.makeRequest("POST", path, new User(name, pass, null), Auth.class);
+        authToken = response.authToken;
+        username = response.username;
         return response;
     }
-    public JoinGameResponse joinGame(int gameID, ChessGame.TeamColor color) throws ResponseException, responses.ResponseException, DataAccessException {
+    public JoinGameResponse joinGame(int gameID, ChessGame.TeamColor color, Game game, String name) throws ResponseException{
         var path = "/game";
-        return this.makeRequest("PUT", path, gameServices.joinGame(authToken, color, gameID), JoinGameResponse.class);
+        if(color == ChessGame.TeamColor.WHITE){
+        return this.makeRequest("PUT", path, new Game(gameID, name, username, game.blackUsername, game.game), JoinGameResponse.class);
+        }
+        if(color == ChessGame.TeamColor.BLACK){
+            return this.makeRequest("PUT", path, new Game(gameID, name, game.whiteUsername, username, game.game), JoinGameResponse.class);
+        }
+        if(color == null){
+            return this.makeRequest("PUT", path, new Game(gameID, name, game.whiteUsername, game.blackUsername, game.game), JoinGameResponse.class);
+        }
+        return null;
     }
-    public CreateGameResponse createGame(String name) throws ResponseException, responses.ResponseException, DataAccessException {
+    public CreateGameResponse createGame(String name) throws ResponseException {
         var path = "/game";
-        return this.makeRequest("POST", path, gameServices.createGame(authToken, name), CreateGameResponse.class);
+        return this.makeRequest("POST", path, new Game(1, name, null, null, new ChessGame()), CreateGameResponse.class);
     }
-    public LogOutResponse logOut() throws ResponseException, responses.ResponseException, DataAccessException {
+    public LogOutResponse logOut() throws ResponseException {
         var path = "/session";
-        return this.makeRequest("DELETE", path, userServices.logout(authToken), LogOutResponse.class);
+        return this.makeRequest("DELETE", path, null, LogOutResponse.class);
     }
-    public ClearResponse clearData() throws ResponseException, responses.ResponseException, DataAccessException {
+    public ClearResponse clearData() throws ResponseException {
         var path = "/db";
-        return this.makeRequest("DELETE", path, clearServices.clearData(), ClearResponse.class);
+        return this.makeRequest("DELETE", path, null, ClearResponse.class);
     }
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {

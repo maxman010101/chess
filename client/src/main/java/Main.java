@@ -1,4 +1,5 @@
 import chess.*;
+import server.Server;
 import ui.ChessClientMenu;
 import ui.ChessServerFacade;
 
