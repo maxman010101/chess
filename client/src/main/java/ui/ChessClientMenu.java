@@ -1,6 +1,7 @@
 package ui;
 
 import com.google.gson.Gson;
+import models.Game;
 import ui.ResponseException;
 
 import java.util.Arrays;
@@ -27,8 +28,8 @@ public class ChessClientMenu {
                 case "listgames" -> listGames();
                 case "logout" -> logOut();
                 case "creategame" -> createGame(params);
-              //  case "joinGame" -> joinGame(params);
-              //  case "joinGameAsObserver" -> joinGame(params);
+                //case "joinGame" -> joinGame(params);
+                //case "joinGameAsObserver" -> joinGame(params);
                 case "quit" -> exit();
                 default -> help();
             };
@@ -36,6 +37,30 @@ public class ChessClientMenu {
             return ex.getMessage();
         }
     }
+//    private Game getGame(int id) throws ResponseException {
+//        for (var game : server.listGames()) {
+//            if(game.getGameID() == id) {
+//                return game;
+//            }
+//        }
+//        return null;
+//    }
+//    public String joinGame(String... params) throws ResponseException {
+//        assertSignedIn();
+//        if (params.length == 1) {
+//            try {
+//                var gameID = Integer.parseInt(params[0]);
+//                var playerColor = params[1];
+//                var game = getGame(gameID);
+//                if (game != null) {
+//                    server.joinGame(gameID, playerColor);
+//                }
+//            } catch (NumberFormatException ignored) {
+//            }
+//        }
+//        throw new ResponseException("Expected: <game id>", 400);
+//        return "";
+//    }
     public String createGame(String... params) throws ResponseException {
         assertSignedIn();
         if (params.length >= 1) {
@@ -79,12 +104,15 @@ public class ChessClientMenu {
     }
     public String listGames() throws ResponseException {
         assertSignedIn();
+        int gameNumb = 1;
         //var games = server.listGames();
         var result = new StringBuilder();
         var gson = new Gson();
-        //for (var game : games) {
-          //result.append(gson.toJson(game)).append('\n');
-        //}
+        //for (var game : games){
+          //  game.setGameID(gameNumb);
+           // result.append(gson.toJson(game)).append('\n');
+           // System.out.print("gameNumb = " + gameNumb + " " + game);
+           // gameNumb++;}
         return result.toString();
     }
     public String logOut() throws ResponseException {
@@ -110,7 +138,7 @@ public class ChessClientMenu {
                 - createGame <gameName>
                 - listGames
                 - joinGame <gameID, color>
-                - joinAsObserver <gameID>
+                - joinAsObserver <gameID, (leave empty as observer)>
                 """);
         }
         return "";
