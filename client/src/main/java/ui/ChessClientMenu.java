@@ -1,10 +1,13 @@
 package ui;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
+import dataAccess.DataAccessException;
 import models.Game;
 import ui.ResponseException;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class ChessClientMenu {
     private String user = null;
@@ -33,26 +36,29 @@ public class ChessClientMenu {
                 case "quit" -> exit();
                 default -> help();
             };
-        } catch (ResponseException ex) {
+        } catch (ResponseException | responses.ResponseException | DataAccessException ex) {
             return ex.getMessage();
         }
     }
     private Game getGame(int id) throws ResponseException {
-        for (var game : server.listGames()) {
+        for (var game : server.listGames().games()) {
             if(game.getGameID() == id) {
                 return game;
             }
         }
         return null;
     }
-    public String joinGame(String... params) throws ResponseException {
+    public String joinGame(String... params) throws ResponseException, responses.ResponseException, DataAccessException {
         assertSignedIn();
         if (params.length >= 1) {
                 var gameID = Integer.parseInt(params[0]);
-                var playerColor = params[1];
+                var playerColorString = params[1];
+                ChessGame.TeamColor color = ChessGame.TeamColor.WHITE;
+                if(Objects.equals(playerColorString, "white")){color = ChessGame.TeamColor.WHITE;}
+                if(Objects.equals(playerColorString, "black")){color = ChessGame.TeamColor.BLACK;}
                 var game = getGame(gameID);
                 if (game != null) {
-                    server.joinGame(gameID, playerColor);
+                    server.joinGame(gameID, color);
                     ChessBoardUI.drawBoard();
                 }
                 else{
@@ -64,7 +70,7 @@ public class ChessClientMenu {
                     "unless you are observing, then leave empty, press enter");}
         return "";
     }
-    public String createGame(String... params) throws ResponseException {
+    public String createGame(String... params) throws ResponseException, responses.ResponseException, DataAccessException {
         assertSignedIn();
         if (params.length >= 1) {
             server.createGame(params[0]);
@@ -81,10 +87,10 @@ public class ChessClientMenu {
         System.exit(0);
         return "";
     }
-    public String register(String... params) throws ResponseException{
+    public String register(String... params) throws ResponseException, responses.ResponseException, DataAccessException {
         if (params.length >= 1) {
-            state = State.SIGNEDIN;
             server.register(params[0], params[1], params[2]);
+            state = State.SIGNEDIN;
             System.out.print("successfully registered, press enter");
         }
         else{
@@ -93,10 +99,10 @@ public class ChessClientMenu {
         }
         return "";
     }
-    public String logIn(String... params) throws ResponseException {
+    public String logIn(String... params) throws ResponseException, responses.ResponseException, DataAccessException {
         if (params.length >= 2) {
-            state = State.SIGNEDIN;
             server.login(params[0], params[1]);
+            state = State.SIGNEDIN;
             System.out.print("logged in, press enter");
         }
         else{
@@ -108,7 +114,7 @@ public class ChessClientMenu {
     public String listGames() throws ResponseException {
         assertSignedIn();
         int gameNumb = 1;
-        var games = server.listGames();
+        var games = server.listGames().games();
         var result = new StringBuilder();
         var gson = new Gson();
         for (var game : games){
@@ -118,10 +124,10 @@ public class ChessClientMenu {
             gameNumb++;}
         return result.toString();
     }
-    public String logOut() throws ResponseException {
+    public String logOut() throws ResponseException, responses.ResponseException, DataAccessException {
         assertSignedIn();
-        state = State.SIGNEDOUT;
         server.logOut();
+        state = State.SIGNEDOUT;
         System.out.print("logged out, press enter");
         return "";
     }
