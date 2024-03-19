@@ -28,6 +28,9 @@ public class ChessBoardUI {
         gameBoard.resetBoard();
     }
     public static void main(String[] args) {
+        drawBoard();
+    }
+    public static void drawBoard(){
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         out.print(ERASE_SCREEN);
         drawHeaders(out, "white");
