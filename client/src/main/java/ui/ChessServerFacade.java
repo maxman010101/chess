@@ -1,7 +1,12 @@
 package ui;
 
 import com.google.gson.Gson;
+import models.Auth;
 import models.Game;
+import responses.ClearResponse;
+import responses.CreateGameResponse;
+import responses.JoinGameResponse;
+import responses.LogOutResponse;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -21,28 +26,29 @@ public class ChessServerFacade {
         var path = "/game";
         return null;
     }
-    public void register(String name, String pass, String email){
+    public Auth register(String name, String pass, String email){
         var path = "/user";
+        return null;
     }
-    public void login(String name, String pass){
+    public Auth login(String name, String pass){
         var path = "/session";
-
+        return null;
     }
-    public void joinGame(int gameID, String color){
+    public JoinGameResponse joinGame(int gameID, String color){
         var path = "/game";
-
+        return null;
     }
-    public void createGame(String name){
+    public CreateGameResponse createGame(String name){
         var path = "/game";
-
+        return null;
     }
-    public void logOut(){
+    public LogOutResponse logOut(){
         var path = "/session";
-
+        return null;
     }
-    public void clearData(){
+    public ClearResponse clearData(){
         var path = "/db";
-
+        return null;
     }
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
