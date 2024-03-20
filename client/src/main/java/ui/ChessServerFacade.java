@@ -42,19 +42,24 @@ public class ChessServerFacade {
     public JoinGameResponse joinGame(int gameID, ChessGame.TeamColor color, Game game, String name) throws ResponseException{
         var path = "/game";
         if(color == ChessGame.TeamColor.WHITE){
-        return this.makeRequest("PUT", path, new Game(gameID, name, username, game.blackUsername, game.game), JoinGameResponse.class, authToken);
+            game.whiteUsername = username;
+            return this.makeRequest("PUT", path, game, JoinGameResponse.class, authToken);
         }
         if(color == ChessGame.TeamColor.BLACK){
-            return this.makeRequest("PUT", path, new Game(gameID, name, game.whiteUsername, username, game.game), JoinGameResponse.class, authToken);
+            game.blackUsername = username;
+            return this.makeRequest("PUT", path, game, JoinGameResponse.class, authToken);
         }
         if(color == null){
-            return this.makeRequest("PUT", path, new Game(gameID, name, game.whiteUsername, game.blackUsername, game.game), JoinGameResponse.class, authToken);
+            return this.makeRequest("PUT", path, game, JoinGameResponse.class, authToken);
         }
-        return null;
+        else
+            return null;
     }
     public CreateGameResponse createGame(String name) throws ResponseException {
         var path = "/game";
-        return this.makeRequest("POST", path, new Game(1, name, null, null, new ChessGame()), CreateGameResponse.class, authToken);
+        var response = this.makeRequest("POST", path, new Game(1, name, null, null, new ChessGame()), CreateGameResponse.class, authToken);
+        //Game curGame = response.
+        return response;
     }
     public void logOut() throws ResponseException {
         var path = "/session";

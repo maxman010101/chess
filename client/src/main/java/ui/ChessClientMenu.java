@@ -14,6 +14,7 @@ public class ChessClientMenu {
     private final ChessServerFacade server;
     private final String serverUrl;
     private State state = State.SIGNEDOUT;
+    //private int[] gameNumbs = new int[]{};
 
     public ChessClientMenu(ChessServerFacade server, String serverUrl) {
         this.server = server;
@@ -26,13 +27,13 @@ public class ChessClientMenu {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             System.out.print("[" + state + "]>>>");
             return switch (cmd) {
+                case "joingame", "observe" -> joinGame(params);
                 case "login" -> logIn(params);
                 case "register" -> register(params);
                 case "listgames" -> listGames();
                 case "logout" -> logOut();
                 case "creategame" -> createGame(params);
-                case "joinGame" -> joinGame(params);
-                case "joinGameAsObserver" -> joinGame(params);
+                case "help" -> getHelp();
                 case "quit" -> exit();
                 default -> help();
             };
@@ -40,23 +41,52 @@ public class ChessClientMenu {
             return ex.getMessage();
         }
     }
+
+    private String getHelp() {
+        if(state == State.SIGNEDIN){
+            System.out.print("""
+                    \n- register -> register a new user with a unique username, a password, and email
+                    - help -> get info about the commands
+                    - login -> login with an existing username and password
+                    - quit -> exit the program
+                    press enter to return to command list
+                    
+                    """);
+        }
+        else
+            System.out.print("""
+                \n- help -> get info about these commands
+                - logout -> logout from the current user
+                - createGame -> make and name a new chess game
+                - listGames -> get a list of your created games
+                - joinGame -> join a game specifying which number game from the list and what color you would like to be
+                - observe -> same as above, but type 'observe' in color spot in order to join a game as a spectator
+                press enter to return to command list
+                
+                """);
+        return "";
+    }
+
     private Game getGame(int id) throws ResponseException {
         var games = server.listGames().games();
-        return games.get(id);
+        return games.get(id - 1);
     }
     public String joinGame(String... params) throws ResponseException, responses.ResponseException, DataAccessException {
+        //System.out.print("TESTING GOT IN");
         assertSignedIn();
         if (params.length >= 1) {
                 var gameID = Integer.parseInt(params[0]);
                 var playerColorString = params[1];
                 ChessGame.TeamColor color = null;
+                if(Objects.equals(playerColorString, "observe")){color = null;};
                 if(Objects.equals(playerColorString, "white")){color = ChessGame.TeamColor.WHITE;}
                 if(Objects.equals(playerColorString, "black")){color = ChessGame.TeamColor.BLACK;}
                 var game = getGame(gameID);
                 if (game != null) {
-                    server.joinGame(game.gameID, color, game, game.gameName);
-                    System.out.print("Here are your game boards from both perspectives!");
+                    server.joinGame(gameID, color, game, game.gameName);
+                    System.out.print("Here are your game boards from both perspectives!\n");
                     ChessBoardUI.drawBoard();
+                    System.out.print("\npress enter to return to commands.");
                 }
                 else{
                     System.out.print("please enter the id of an existing game");
@@ -119,7 +149,6 @@ public class ChessClientMenu {
         var result = new StringBuilder();
         var gson = new Gson();
         for (var game : games){
-            //game.setGameID(gameNumb);
             result.append(gson.toJson(game)).append('\n');
             System.out.print("\n" + gameNumb + " " + game);
             gameNumb++;
@@ -150,7 +179,7 @@ public class ChessClientMenu {
                 - createGame <gameName>
                 - listGames
                 - joinGame <gameID, color>
-                - joinAsObserver <gameID, (leave empty as observer)>
+                - observe <gameID, 'observe'>
                 """);
         }
         return "";
