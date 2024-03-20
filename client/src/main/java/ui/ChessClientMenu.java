@@ -40,7 +40,7 @@ public class ChessClientMenu {
             return ex.getMessage();
         }
     }
-    private Game getGame(int id) throws ResponseException, responses.ResponseException, DataAccessException {
+    private Game getGame(int id) throws ResponseException {
         var games = server.listGames().games();
         return games.get(id);
     }
@@ -49,12 +49,13 @@ public class ChessClientMenu {
         if (params.length >= 1) {
                 var gameID = Integer.parseInt(params[0]);
                 var playerColorString = params[1];
-                ChessGame.TeamColor color = ChessGame.TeamColor.WHITE;
+                ChessGame.TeamColor color = null;
                 if(Objects.equals(playerColorString, "white")){color = ChessGame.TeamColor.WHITE;}
                 if(Objects.equals(playerColorString, "black")){color = ChessGame.TeamColor.BLACK;}
                 var game = getGame(gameID);
                 if (game != null) {
                     server.joinGame(game.gameID, color, game, game.gameName);
+                    System.out.print("Here are your game boards from both perspectives!");
                     ChessBoardUI.drawBoard();
                 }
                 else{
@@ -120,8 +121,10 @@ public class ChessClientMenu {
         for (var game : games){
             //game.setGameID(gameNumb);
             result.append(gson.toJson(game)).append('\n');
-            System.out.print(gameNumb + " " + game);
-            gameNumb++;}
+            System.out.print("\n" + gameNumb + " " + game);
+            gameNumb++;
+        }
+        System.out.print("\nHere are your games, press enter to return to command list.");
         return result.toString();
     }
     public String logOut() throws ResponseException, responses.ResponseException, DataAccessException {
