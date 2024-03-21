@@ -25,7 +25,7 @@ public class ServerFacadeTests {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
-        facade = new ChessServerFacade("http://localhost:8080");
+        facade = new ChessServerFacade("http://localhost:0");
     }
     @BeforeEach
     public void clearData() throws responses.ResponseException, DataAccessException {
