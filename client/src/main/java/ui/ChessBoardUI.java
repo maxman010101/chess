@@ -38,7 +38,8 @@ public class ChessBoardUI {
         drawHeaders(out, null);
         drawHeaders(out, "black");
         drawChessBoard(out, "black");
-        System.out.print("Press enter to return to command list");
+        out.print(SET_TEXT_COLOR_WHITE);
+        //System.out.print("Press enter to return to command list");
     }
     private static void drawHeaders(PrintStream out, String color) {
         setBlack(out);

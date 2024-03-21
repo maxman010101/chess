@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import models.Auth;
 import models.Game;
 import models.User;
-import requests.LogOutRequest;
 import responses.*;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -39,18 +38,18 @@ public class ChessServerFacade {
         username = response.username;
         return response;
     }
-    public JoinGameResponse joinGame(int gameID, ChessGame.TeamColor color, Game game, String name) throws ResponseException{
+    public Game joinGame(int gameID, ChessGame.TeamColor color, Game game, String name) throws ResponseException{
         var path = "/game";
         if(color == ChessGame.TeamColor.WHITE){
-            game.whiteUsername = username;
-            return this.makeRequest("PUT", path, game, JoinGameResponse.class, authToken);
+            game.setWhiteUsername(username);
+            return this.makeRequest("PUT", path, game, Game.class, authToken);
         }
         if(color == ChessGame.TeamColor.BLACK){
-            game.blackUsername = username;
-            return this.makeRequest("PUT", path, game, JoinGameResponse.class, authToken);
+            game.setBlackUsername(username);
+            return this.makeRequest("PUT", path, game, Game.class, authToken);
         }
         if(color == null){
-            return this.makeRequest("PUT", path, game, JoinGameResponse.class, authToken);
+            return this.makeRequest("PUT", path, game, Game.class, authToken);
         }
         else
             return null;

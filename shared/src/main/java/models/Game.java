@@ -17,6 +17,22 @@ public class Game {
         this.game = game;
     }
 
+    public String getWhiteUsername() {
+        return whiteUsername;
+    }
+
+    public void setWhiteUsername(String whiteUsername) {
+        this.whiteUsername = whiteUsername;
+    }
+
+    public String getBlackUsername() {
+        return blackUsername;
+    }
+
+    public void setBlackUsername(String blackUsername) {
+        this.blackUsername = blackUsername;
+    }
+
     public int getGameID() {
         return gameID;
     }
