@@ -76,7 +76,7 @@ public class ChessClientMenu {
     public String joinGame(String... params) throws ResponseException, responses.ResponseException, DataAccessException {
         //System.out.print("TESTING GOT IN");
         assertSignedIn();
-        if (params.length >= 1) {
+        if (params.length == 2) {
                 var gameID = Integer.parseInt(params[0]);
                 var playerColorString = params[1];
                 ChessGame.TeamColor color = null;
@@ -96,7 +96,7 @@ public class ChessClientMenu {
         }
         else{
             System.out.print("please enter a the correct id of the game you want to join and either white or black for color, " +
-                    "unless you are observing, then leave empty, press enter");}
+                    "\nunless you are observing, then use the observe command with its inputs, press enter to return");}
         return "";
     }
     public String createGame(String... params) throws ResponseException, responses.ResponseException, DataAccessException {
@@ -117,7 +117,7 @@ public class ChessClientMenu {
         return "";
     }
     public String register(String... params) throws ResponseException, responses.ResponseException, DataAccessException {
-        if (params.length >= 1) {
+        if (params.length == 3) {
             var response = server.register(params[0], params[1], params[2]);
             if(response.authToken != null){
                 state = State.SIGNEDIN;
