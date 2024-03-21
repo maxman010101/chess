@@ -63,6 +63,7 @@ public class ServerFacadeTests {
         //cannot log in if the user isn't registered
         facade.register("a", "b", "c");
         facade.logOut();
+        facade.login("a", "b");
         SQLUserDataAccess userDao = new SQLUserDataAccess();
         Assertions.assertNotNull(userDao.getUser("a"));
         Assertions.assertNull(userDao.getUser("otherName"));
