@@ -49,6 +49,7 @@ public class ChessClientMenu {
                     - help -> get info about the commands
                     - login -> login with an existing username and password
                     - quit -> exit the program
+                    If a command doesnt work, it will give you a message or it will reset you to the menu again
                     press enter to return to command list
                     
                     """);
@@ -61,6 +62,7 @@ public class ChessClientMenu {
                 - listGames -> get a list of your created games
                 - joinGame -> join a game specifying which number game from the list and what color you would like to be
                 - observe -> same as above, but type 'observe' in color spot in order to join a game as a spectator
+                If a command doesnt work, it will give you a message or it will reset you to the menu again
                 press enter to return to command list
                 
                 """);

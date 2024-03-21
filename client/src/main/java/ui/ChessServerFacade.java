@@ -5,6 +5,8 @@ import com.google.gson.Gson;
 import models.Auth;
 import models.Game;
 import models.User;
+import requests.JoinGameRequest;
+import requests.LogOutRequest;
 import responses.*;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -38,18 +40,18 @@ public class ChessServerFacade {
         username = response.username;
         return response;
     }
-    public Game joinGame(int gameID, ChessGame.TeamColor color, Game game, String name) throws ResponseException{
+    public JoinGameResponse joinGame(int gameID, ChessGame.TeamColor color, Game game, String name) throws ResponseException{
         var path = "/game";
         if(color == ChessGame.TeamColor.WHITE){
             game.setWhiteUsername(username);
-            return this.makeRequest("PUT", path, game, Game.class, authToken);
+            return this.makeRequest("PUT", path, new JoinGameRequest(color, gameID), JoinGameResponse.class, authToken);
         }
         if(color == ChessGame.TeamColor.BLACK){
             game.setBlackUsername(username);
-            return this.makeRequest("PUT", path, game, Game.class, authToken);
+            return this.makeRequest("PUT", path, new JoinGameRequest(color, gameID), JoinGameResponse.class, authToken);
         }
         if(color == null){
-            return this.makeRequest("PUT", path, game, Game.class, authToken);
+            return this.makeRequest("PUT", path, new JoinGameRequest(color, gameID), JoinGameResponse.class, authToken);
         }
         else
             return null;
@@ -63,10 +65,6 @@ public class ChessServerFacade {
     public void logOut() throws ResponseException {
         var path = "/session";
         this.makeRequest("DELETE", path, null, LogOutResponse.class, authToken);
-    }
-    public ClearResponse clearData() throws ResponseException {
-        var path = "/db";
-        return this.makeRequest("DELETE", path, null, ClearResponse.class, null);
     }
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String token) throws ResponseException {
         try {
