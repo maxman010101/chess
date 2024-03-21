@@ -131,7 +131,7 @@ public class ChessClientMenu {
         return "";
     }
     public String logIn(String... params) throws ResponseException, responses.ResponseException, DataAccessException {
-        if (params.length >= 2) {
+        if (params.length >= 2 && params[0] != null && !params[0].isEmpty() && params[1] != null && !params[1].isEmpty()) {
             var response = server.login(params[0], params[1]);
             if(response.authToken != null){
                 state = State.SIGNEDIN;
@@ -151,8 +151,12 @@ public class ChessClientMenu {
         var result = new StringBuilder();
         var gson = new Gson();
         for (var game : games){
+            String whiteUser = game.whiteUsername;
+            String blackUser = game.blackUsername;
+            if(game.whiteUsername == null){whiteUser = "EMPTY";}
+            if(game.blackUsername == null){blackUser = "EMPTY";}
             result.append(gson.toJson(game)).append('\n');
-            System.out.print("\n" + gameNumb + " " + game);
+            System.out.print("\n" + gameNumb + " -- Game Name: " + game.gameName + ", White Player: " + whiteUser + ", Black Player: " + blackUser);
             gameNumb++;
         }
         System.out.print("\nHere are your games, press enter to return to command list.");

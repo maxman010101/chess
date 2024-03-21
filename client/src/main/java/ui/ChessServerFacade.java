@@ -15,6 +15,8 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.io.InputStream;
+import java.util.Objects;
+
 public class ChessServerFacade {
     private final String serverUrl;
     private String authToken;
@@ -42,19 +44,23 @@ public class ChessServerFacade {
     }
     public JoinGameResponse joinGame(int gameID, ChessGame.TeamColor color, Game game, String name) throws ResponseException{
         var path = "/game";
-        if(color == ChessGame.TeamColor.WHITE){
+        if(color == ChessGame.TeamColor.WHITE && !Objects.equals(game.whiteUsername, username)
+                && !Objects.equals(game.blackUsername, username) && !Objects.equals(game.whiteUsername, "EMPTY")){
             game.setWhiteUsername(username);
             return this.makeRequest("PUT", path, new JoinGameRequest(color, gameID), JoinGameResponse.class, authToken);
         }
-        if(color == ChessGame.TeamColor.BLACK){
+        if(color == ChessGame.TeamColor.BLACK && !Objects.equals(game.whiteUsername, username)
+                && !Objects.equals(game.blackUsername, username) && !Objects.equals(game.whiteUsername, "EMPTY")){
             game.setBlackUsername(username);
             return this.makeRequest("PUT", path, new JoinGameRequest(color, gameID), JoinGameResponse.class, authToken);
         }
         if(color == null){
             return this.makeRequest("PUT", path, new JoinGameRequest(color, gameID), JoinGameResponse.class, authToken);
         }
-        else
-            return null;
+        else{
+            System.out.print("you have already joined this game as this or the other color, or this team is already taken (check the game list to see the teams), \nplease pick the other color if open or join another game");
+            throw new ResponseException("Already part of this team.", 500);
+        }
     }
     public CreateGameResponse createGame(String name) throws ResponseException {
         var path = "/game";

@@ -48,10 +48,10 @@ public class ChessBoardUI {
             headers = new String[]{"   ", "   ", "   ", "   ", "   ", "   ", "   ", "   "};
         }
         if(Objects.equals(color, "white")){
-            headers = new String[]{" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
+            headers = new String[]{"    a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
         }
         if(Objects.equals(color, "black")){
-            headers = new String[]{" h ", " g ", " f ", " e ", " d ", " c ", " b ", " a "};
+            headers = new String[]{"    h ", " g ", " f ", " e ", " d ", " c ", " b ", " a "};
         }
         for(int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
             drawHeader(out, headers[boardCol]);
@@ -118,7 +118,7 @@ public class ChessBoardUI {
         if(Objects.equals(color, "white")){
         rowNumbs = new String[]{ " 8 ", " 7 ", " 6 ", " 5 ", " 4 ", " 3 ", " 2 ", " 1 " };
             for (int squareRow = 0; squareRow < SQUARE_SIZE_IN_CHARS; ++squareRow) {
-                if(!rowNumSet){
+                if(!rowNumSet && squareRow == 1){
                     printHeaderText(out, rowNumbs[rowNumber]);
                     rowNumSet = true;
                 }
@@ -139,7 +139,7 @@ public class ChessBoardUI {
         if(Objects.equals(color, "black")){
             rowNumbs = new String[]{" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 "};
             for (int squareRow = 0; squareRow < SQUARE_SIZE_IN_CHARS; ++squareRow) {
-                if(!rowNumSet){
+                if(!rowNumSet && squareRow == 1){
                     printHeaderText(out, rowNumbs[rowNumber]);
                     rowNumSet = true;
                 }
