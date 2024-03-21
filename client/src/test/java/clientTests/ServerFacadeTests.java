@@ -20,7 +20,6 @@ public class ServerFacadeTests {
     private static Server server;
     static ChessServerFacade facade;
     private ClearService clearService = new ClearService();
-
     @BeforeAll
     public static void init() {
         server = new Server();
