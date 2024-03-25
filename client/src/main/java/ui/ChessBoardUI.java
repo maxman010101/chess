@@ -41,6 +41,20 @@ public class ChessBoardUI {
         out.print(SET_TEXT_COLOR_WHITE);
         //System.out.print("Press enter to return to command list");
     }
+    public static void drawWhiteBoard(){
+        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+        out.print(ERASE_SCREEN);
+        drawHeaders(out, "white");
+        drawChessBoard(out, "white");
+        out.print(SET_TEXT_COLOR_WHITE);
+    }
+    public static void drawBlackBoard(){
+        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+        out.print(ERASE_SCREEN);
+        drawHeaders(out, "black");
+        drawChessBoard(out, "black");
+        out.print(SET_TEXT_COLOR_WHITE);
+    }
     private static void drawHeaders(PrintStream out, String color) {
         setBlack(out);
         String[] headers = {""};
