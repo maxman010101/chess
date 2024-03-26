@@ -2,13 +2,12 @@ package ui;
 
 import com.google.gson.Gson;
 import webSocketMessages.userCommands.UserGameCommand;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.websocket.*;
 
-public class WebSocketFacade {
+public class WebSocketFacade extends  Endpoint{
     Session session;
     NotificationHandler notificationHandler;
 
