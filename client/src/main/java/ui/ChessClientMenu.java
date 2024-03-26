@@ -4,19 +4,21 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import models.Game;
-import ui.ResponseException;
 
 import java.util.Arrays;
 import java.util.Objects;
 
 public class ChessClientMenu {
-    private String user = null;
+    private String userName = null;
+    private final NotificationHandler notificationHandler;
+    private WebSocketFacade ws;
     private final ChessServerFacade server;
     private final String serverUrl;
     private State state = State.SIGNEDOUT;
     //private int[] gameNumbs = new int[]{};
 
     public ChessClientMenu(ChessServerFacade server, String serverUrl) {
+        //this.notificationHandler = notificationHandler;
         this.server = server;
         this.serverUrl = serverUrl;
     }
@@ -77,17 +79,23 @@ public class ChessClientMenu {
         //System.out.print("TESTING GOT IN");
         assertSignedIn();
         if (params.length == 2) {
-                var gameID = Integer.parseInt(params[0]);
-                var playerColorString = params[1];
-                ChessGame.TeamColor color = null;
-                if(Objects.equals(playerColorString, "observe")){color = null;};
-                if(Objects.equals(playerColorString, "white")){color = ChessGame.TeamColor.WHITE;}
-                if(Objects.equals(playerColorString, "black")){color = ChessGame.TeamColor.BLACK;}
-                var game = getGame(gameID);
-                if (game != null) {
-                    server.joinGame(gameID, color, game, game.gameName);
-                    System.out.print("Here are your game boards from both perspectives!\n");
-                    ChessBoardUI.drawBoard();
+            var gameID = Integer.parseInt(params[0]);
+            var playerColorString = params[1];
+            ws = new WebSocketFacade(serverUrl, notificationHandler);
+            ChessGame.TeamColor color = null;
+            if(Objects.equals(playerColorString, "observe")){color = null;};
+            if(Objects.equals(playerColorString, "white")){color = ChessGame.TeamColor.WHITE;}
+            if(Objects.equals(playerColorString, "black")){color = ChessGame.TeamColor.BLACK;}
+            var game = getGame(gameID);
+            if (game != null) {
+                server.joinGame(gameID, color, game, game.gameName);
+                System.out.print("Here is your game board from " + color + "'s perspectives!\n");
+                if (color == ChessGame.TeamColor.WHITE || color == null) {
+                    ChessBoardUI.drawWhiteBoard();
+                }
+                if(color == ChessGame.TeamColor.BLACK){
+                    ChessBoardUI.drawBlackBoard();
+                }
                     System.out.print("\npress enter to return to commands.");
                 }
                 else{
