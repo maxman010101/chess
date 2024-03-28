@@ -1,6 +1,6 @@
 package ui;
 
-import chess.ChessGame;
+import chess.*;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import models.Game;
@@ -10,15 +10,14 @@ import java.util.Objects;
 
 public class ChessClientMenu {
     private String userName = null;
+    private Game currGame = null;
     private final NotificationHandler notificationHandler;
     private WebSocketFacade ws;
     private final ChessServerFacade server;
     private final String serverUrl;
     private State state = State.SIGNEDOUT;
-    //private int[] gameNumbs = new int[]{};
-
-    public ChessClientMenu(ChessServerFacade server, String serverUrl) {
-        //this.notificationHandler = notificationHandler;
+    public ChessClientMenu(NotificationHandler notificationHandler, ChessServerFacade server, String serverUrl) {
+        this.notificationHandler = notificationHandler;
         this.server = server;
         this.serverUrl = serverUrl;
     }
@@ -37,6 +36,11 @@ public class ChessClientMenu {
                 case "creategame" -> createGame(params);
                 case "help" -> getHelp();
                 case "quit" -> exit();
+                case "redrawboard" -> redrawBoard(params);
+                case "leave" -> leaveGame();
+                case "makemove" -> makeAMove(params);
+                case "resign" -> resignGame();
+                case "highlightlegalmoves" -> highlightMoves(params);
                 default -> help();
             };
         } catch (ResponseException | responses.ResponseException | DataAccessException ex) {
@@ -44,7 +48,70 @@ public class ChessClientMenu {
         }
     }
 
+    public String highlightMoves(String[] params) {
+        var pieceRow = Integer.parseInt(params[0]);
+        var pieceColumn = Integer.parseInt(params[1]);
+        return "";
+    }
+    public String resignGame() throws ResponseException {
+        ws = new WebSocketFacade(serverUrl, notificationHandler);
+        ws.resign(currGame.gameID);
+        return "";
+    }
+    public String makeAMove(String[] params) throws ResponseException {
+        ws = new WebSocketFacade(serverUrl, notificationHandler);
+        var pieceRow = Integer.parseInt(params[0]);
+        var pieceColumn = Integer.parseInt(params[1]);
+        var moveRow = Integer.parseInt(params[2]);
+        var moveColumn = Integer.parseInt(params[3]);
+        ws.makeMove(currGame.gameID, new ChessMove(new ChessPosition(pieceRow, pieceColumn), new ChessPosition(moveRow, moveColumn), null));
+        return "";
+    }
+    public String leaveGame() throws ResponseException {
+        ws = new WebSocketFacade(serverUrl, notificationHandler);
+        ws.leaveGame(currGame.gameID);
+        state = State.SIGNEDIN;
+        return "";
+    }
+    public String redrawBoard(String... params) {
+        if (params.length >= 1) {
+            var team = params[0];
+            if(Objects.equals(team, "white")){
+                ChessBoardUI.drawWhiteBoard();
+            }
+            if(Objects.equals(team, "black")){
+                ChessBoardUI.drawBlackBoard();
+            }
+            if(Objects.equals(team, "observer")){
+                ChessBoardUI.drawWhiteBoard();
+            }
+        }
+        return "";
+    }
     private String getHelp() {
+        if(state == State.PLAYGAME){
+            System.out.print("""
+                    \n- redrawboard -> draws the game board again, specify which team you are on ('white' or 'black') or if you are an 'observer'
+                    - leave -> exit the current game, opens up your team for another player if you are on a team
+                    - makemove -> enter in the coordinates of the piece you wish to move, then enter in the coordinates of the move\n you wish to make, example 'a 8 (the desired piece) a 7 (the desired move)'
+                    - resign -> you surrender the game, game ends
+                    - highlightlegalmoves -> choose which piece to look at, legal moves for that piece at highlighted, example, 'a 8'
+                    - help -> get info about the commands
+                    If a command doesnt work, it will give you a message or it will reset you to the menu again
+                    press enter to return to command list
+                    
+                    """);
+        }
+        if(state == State.WATCHGAME){
+            System.out.print("""
+                    \n- redrawboard -> draws the game board again, specify which team you are on ('white' or 'black') or if you are an 'observer'
+                    - leave -> exit the current game, opens up your team for another player if you are on a team
+                    - help -> get info about the commands
+                    If a command doesnt work, it will give you a message or it will reset you to the menu again
+                    press enter to return to command list
+                    
+                    """);
+        }
         if(state == State.SIGNEDIN){
             System.out.print("""
                     \n- register -> register a new user with a unique username, a password, and email
@@ -76,17 +143,29 @@ public class ChessClientMenu {
         return games.get(id - 1);
     }
     public String joinGame(String... params) throws ResponseException, responses.ResponseException, DataAccessException {
-        //System.out.print("TESTING GOT IN");
         assertSignedIn();
         if (params.length == 2) {
             var gameID = Integer.parseInt(params[0]);
             var playerColorString = params[1];
             ws = new WebSocketFacade(serverUrl, notificationHandler);
             ChessGame.TeamColor color = null;
-            if(Objects.equals(playerColorString, "observe")){color = null;};
-            if(Objects.equals(playerColorString, "white")){color = ChessGame.TeamColor.WHITE;}
-            if(Objects.equals(playerColorString, "black")){color = ChessGame.TeamColor.BLACK;}
+            if(Objects.equals(playerColorString, "observe")){
+                state = State.WATCHGAME;
+                ws.joinAsPlayer(currGame.gameID, color);
+            }
+            if(Objects.equals(playerColorString, "white")){
+                color = ChessGame.TeamColor.WHITE;
+                state = State.PLAYGAME;
+                ws.joinAsPlayer(currGame.gameID, color);
+
+            }
+            if(Objects.equals(playerColorString, "black")){
+                color = ChessGame.TeamColor.BLACK;
+                state = State.PLAYGAME;
+                ws.joinAsPlayer(currGame.gameID, color);
+            }
             var game = getGame(gameID);
+            currGame = game;
             if (game != null) {
                 server.joinGame(gameID, color, game, game.gameName);
                 System.out.print("Here is your game board from " + color + "'s perspectives!\n");
@@ -178,6 +257,23 @@ public class ChessClientMenu {
         return "";
     }
     public String help() {
+        if(state == State.PLAYGAME){
+            System.out.print("""
+                    \n- redrawBoard <teamColor>
+                    - leave
+                    - makeMove <pieceRow, pieceColumn, moveRow, pieceColumn>
+                    - resign
+                    - highlightLegalMoves <row, column>
+                    - help
+                    """);
+        }
+        if(state == State.WATCHGAME) {
+            System.out.print("""
+                    \n- redrawBoard <'observer'>
+                    - leave
+                    - help
+                    """);
+        }
         if (state == State.SIGNEDOUT) {
             System.out.print("""
                     \n- register <username, password, email>
